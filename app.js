@@ -71,18 +71,48 @@
   }
   $('sala').textContent = 'Sala ' + sala;
 
+  // ---------------------------------------------------------------- tema do evento (temas/<1.º nível da sala>/)
+  // tema.json: titulo, subtitulo, autor, contactos[], agradecimento, css. Tudo entra como texto, nunca como HTML.
+  async function aplicarTema() {
+    const dir = BASE + 'temas/' + sala.split('/')[0] + '/';
+    let t;
+    try { const r = await fetch(dir + 'tema.json', {cache: 'no-cache', credentials: 'omit'}); if (!r.ok) return; t = await r.json(); }
+    catch (e) { return; }
+    if (!t || typeof t !== 'object') return;
+    if (t.css) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = dir + String(t.css).replace(/[^a-z0-9._-]/gi, ''); document.head.append(l); }
+    document.body.classList.add('com-tema');
+    if (t.titulo) { $('titulo').textContent = t.titulo; document.title = t.titulo; }
+    if (t.subtitulo) $('subtitulo').textContent = t.subtitulo;
+    $('evento').hidden = !(t.titulo || t.subtitulo);
+    if (t.agradecimento) { $('obrigado').textContent = t.agradecimento; $('obrigado').hidden = false; }
+    const contactos = Array.isArray(t.contactos) ? t.contactos.map(String) : [];
+    if (t.autor || contactos.length) {
+      const a = $('autor'); a.replaceChildren();
+      if (t.autor) a.append(el('b', {text: String(t.autor)}));
+      contactos.forEach((c, i) => {
+        a.append(i === 0 && t.autor ? ' | ' : ' · ');
+        a.append(/^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(c) ? el('a', {href: 'mailto:' + c, text: c}) : document.createTextNode(c));
+      });
+      $('rodape').hidden = false;
+    }
+  }
+  aplicarTema();
+  const posicao = q => { const p = q && q.ordem && q.total ? `Pergunta ${q.ordem} de ${q.total}` : ''; $('posicao').textContent = p; if (p) $('rodape').hidden = false; };
+
   // ---------------------------------------------------------------- com sala
   let ecra = '', tinhaPergunta = false, falhas = 0, timer = null, aEnviar = false;
-  const defKey = q => [q.id, q.tipo, q.texto, JSON.stringify(q.opcoes), q.maxEscolhas, q.min, q.max].join('|');
+  const defKey = q => [q.id, q.tipo, q.texto, JSON.stringify(q.opcoes), q.maxEscolhas, q.min, q.max, q.ordem, q.total].join('|');
   const chaveVoto = q => 'votar:' + sala + ':' + defKey(q);
 
   function mostrarEspera(fechada) {
+    posicao(null);
     vista.replaceChildren(el('p', {class: 'espera'},
       el('b', {text: fechada ? 'Votação fechada. Obrigado.' : 'Ainda não há pergunta aberta.'}),
       fechada ? 'A próxima pergunta aparece aqui sozinha.' : 'Mantenha esta página aberta: a pergunta aparece sozinha.'));
   }
 
   function mostrarPergunta(q) {
+    posicao(q);
     const guardado = (() => { try { return JSON.parse(store.get(chaveVoto(q)) || 'null'); } catch (e) { return null; } })();
     const ok = el('p', {class: 'ok', hidden: ''});
     const botoes = [];

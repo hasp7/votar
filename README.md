@@ -23,6 +23,17 @@ o orador vê os resultados no ecrã. Sem Google, sem contas e sem nomes.
 - **Tipos:** escolha única, escolha múltipla (com máximo) e escala de 1 a N com legendas.
 - **Votar outra vez** substitui o voto anterior, até a pergunta fechar.
 
+## Tema por evento
+
+Uma sala cujo primeiro nível tem pasta em `temas/` usa o tema dessa pasta (ex.: `spp26` e `spp26/…` usam
+`temas/spp26/`). Sem pasta, a página fica com o aspeto neutro.
+
+- `tema.json`: `titulo` e `subtitulo` (em cima), `autor` e `contactos` (rodapé, à esquerda), `agradecimento`
+  (em baixo, discreto) e `css`. Tudo entra como texto, nunca como HTML.
+- `tema.css`: cores, fontes e marca de água do template da apresentação. Fontes e imagens ficam na própria
+  pasta (a CSP só deixa carregar do próprio site); fontes com a licença ao lado (`OFL.txt`).
+- «Pergunta x de y» no rodapé, à direita, quando o deck envia `ordem` e `total` ao abrir a pergunta.
+
 ## Privacidade
 
 - Cada telemóvel tem só um código aleatório guardado no próprio telemóvel. Não se pede nome,
@@ -40,8 +51,9 @@ o orador vê os resultados no ecrã. Sem Google, sem contas e sem nomes.
 | `index.html`, `404.html` | A página (iguais: o GitHub Pages serve o `404.html` para qualquer `/votar/<sala>/`) |
 | `app.js`, `app.css` | Lógica e estilo; sem dependências |
 | `supabase/migrations/` | Esquema da base de dados (fonte de verdade) |
-| `tests/api.test.mjs` | 31 verificações da API: votos válidos e inválidos, chave, tabelas fechadas |
-| `tests/pagina.test.mjs` | 18 verificações da página com 3 telemóveis simulados contra a base real |
+| `temas/<evento>/` | Tema de um evento (ver acima) |
+| `tests/api.test.mjs` | 34 verificações da API: votos válidos e inválidos, chave, tabelas fechadas |
+| `tests/pagina.test.mjs` | 27 verificações da página, com tema e sem tema, com 3 telemóveis simulados contra a base real |
 
 ```bash
 node tests/api.test.mjs https://tlqnhpvdzgyqwmextemq.supabase.co <chave_publicavel>

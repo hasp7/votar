@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://tlqnhpvdzgyqwmextemq.supabase.co; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self' https://tlqnhpvdzgyqwmextemq.supabase.co; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0F2430">
@@ -13,11 +13,16 @@
 </head>
 <body>
 <main>
-  <header><span class="marca">votar</span><span id="sala" class="sala"></span></header>
+  <header>
+    <div class="evento" id="evento" hidden><p id="titulo" class="titulo"></p><p id="subtitulo" class="subtitulo"></p></div>
+    <div class="topo"><span class="marca">votar</span><span id="sala" class="sala"></span></div>
+  </header>
   <section id="vista" aria-live="polite"><p class="espera">A carregar…</p></section>
   <p id="estado" class="estado" role="status"></p>
+  <p id="obrigado" class="obrigado" hidden></p>
+  <p class="privacidade">Anónimo: não pedimos nome nem contacto. Este telemóvel tem só um código aleatório, para o voto não contar duas vezes.</p>
 </main>
-<footer>Anónimo: não pedimos nome nem contacto. Este telemóvel tem só um código aleatório, para o voto não contar duas vezes.</footer>
+<footer id="rodape" hidden><span id="autor" class="autor"></span><span id="posicao" class="posicao"></span></footer>
 <noscript><p class="espera">Esta página precisa de JavaScript para votar.</p></noscript>
 </body>
 </html>

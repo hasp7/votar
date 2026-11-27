@@ -1,0 +1,44 @@
+/* Tema SPP × 42.º Congresso de Pneumologia (28/11/2026) — o mesmo template do deck v8.spp-id.
+   Verde SPP como base, tons do congresso (ciano, azul petróleo, magenta) no filete, títulos e véu de fundo;
+   títulos em Jost e corpo em IBM Plex Sans (SIL OFL 1.1, ver OFL.txt); velas do congresso como marca de água. */
+@font-face{font-family:"SPP Jost";font-weight:500;font-display:swap;src:url(jost-medium.woff2) format("woff2")}
+@font-face{font-family:"SPP Jost";font-weight:600;font-display:swap;src:url(jost-semibold.woff2) format("woff2")}
+@font-face{font-family:"SPP Jost";font-weight:700;font-display:swap;src:url(jost-bold.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:400;font-display:swap;src:url(ibmplexsans-400.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:600 700;font-display:swap;src:url(ibmplexsans-600.woff2) format("woff2")}
+
+:root{
+  --bg:#EEF6F4; --surface:#FFFFFF; --ink:#0E2B30; --muted:#486267; --line:#C2D9D4;
+  --signal:#006E61; --signal-soft:rgba(0,180,153,.13); --alarm:#B25C00;
+  --head:#0F4F6B; --mag:#A214C4;
+  --brand-grad:linear-gradient(90deg,#13BA9F 0%,#189CC0 45%,#1878A8 65%,#CC18F0 100%);
+  --wash1:rgba(204,24,240,.15); --wash2:rgba(24,156,192,.17);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0A2229; --surface:#12373F; --ink:#E8F5F2; --muted:#9DBCB9; --line:#285159;
+  --signal:#4FD8BC; --signal-soft:rgba(79,216,188,.14); --alarm:#F5A524;
+  --head:#E8F5F2; --mag:#E37BF7; --wash1:rgba(227,123,247,.16); --wash2:rgba(91,192,232,.16);
+}}
+
+body{font-family:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;
+  background:radial-gradient(700px 520px at 100% 0%,var(--wash1),transparent 66%),
+             radial-gradient(700px 520px at 0% 100%,var(--wash2),transparent 64%),var(--bg);
+  background-attachment:fixed}
+/* filete da marca no topo, como nos diapositivos */
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:6px;background:var(--brand-grad);z-index:3}
+/* velas do congresso como marca de água, por trás do conteúdo */
+body::after{content:"";position:fixed;right:10px;bottom:64px;width:170px;height:196px;
+  background:url(velas.png) no-repeat right bottom/contain;opacity:.10;pointer-events:none;z-index:0}
+main{position:relative;z-index:1}
+footer{z-index:2}
+
+.titulo{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:700;color:var(--head);font-size:21px;letter-spacing:-.01em}
+.subtitulo{color:var(--mag);font-size:14.5px}
+.evento{padding-top:8px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:22px}
+h1{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600;color:var(--head);font-size:26px;letter-spacing:-.01em}
+.espera b{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600;color:var(--head)}
+.op{border-color:var(--line)}
+.op .letra{font-family:"SPP Jost","IBM Plex Sans",sans-serif}
+.enviar{background:var(--signal)}
+.obrigado{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:500;color:var(--mag);opacity:.85}
+footer{background:color-mix(in srgb,var(--bg) 88%,transparent)}

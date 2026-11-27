@@ -6,7 +6,7 @@ const KEY = process.argv[2];
 const URL_API = 'https://tlqnhpvdzgyqwmextemq.supabase.co';
 const ROOT = path.resolve('.'), PORT = 8765, DBG = 9351;
 const SALA = 'teste/pagina-' + Date.now().toString(36), CHAVE = 'k' + crypto.randomUUID().replace(/-/g, '');
-const TYPES = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript'};
+const TYPES = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.txt': 'text/plain'};
 const srv = http.createServer((req, res) => {
   const p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (!p.startsWith('/votar/')) { res.writeHead(404); return res.end(); }
@@ -83,6 +83,26 @@ t(r.contagens[3] === 1 && Number(r.media) === 4, `escala enviada: ${JSON.stringi
 
 await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE}); await sleep(5000);
 t((await F[2].ev(`document.querySelector('.espera')?.textContent||''`)).startsWith('Votação fechada'), 'fechar: os telemóveis mostram «Votação fechada»');
+
+t(await F[2].ev(`document.getElementById('evento').hidden && !document.body.classList.contains('com-tema')`), 'sala sem tema: aspeto neutro, sem cabeçalho de evento');
+
+// tema do evento: salas cujo 1.º nível tem pasta em temas/ (aqui spp26/…)
+const SALA_T = 'spp26/teste-' + Date.now().toString(36);
+const P4 = {id: 'q2', tipo: 'unica', ordem: 2, total: 3, texto: 'O que lhe falta mais?', opcoes: ['Literacia em IA', 'Uso seguro e verificação', 'Co-criação de ferramentas', 'Avaliação e governação']};
+t((await rpc('votar_abrir', {p_sala: SALA_T, p_chave: CHAVE, p_pergunta: P4})).ok, 'abrir com ordem e total');
+const G = await telemovel(`http://127.0.0.1:${PORT}/votar/${SALA_T}/`); await sleep(3500);
+const tema = JSON.parse(await G.ev(`JSON.stringify({t:document.getElementById('titulo').textContent,s:document.getElementById('subtitulo').textContent,
+  p:document.getElementById('posicao').textContent,a:document.getElementById('autor').textContent,o:document.getElementById('obrigado').hidden?'':document.getElementById('obrigado').textContent,
+  f:getComputedStyle(document.querySelector('h1')).fontFamily,ok:document.fonts.check('600 26px "SPP Jost"'),
+  r:document.getElementById('rodape').getBoundingClientRect().bottom<=innerHeight+1})`));
+t(tema.t.startsWith('A Aplicabilidade da IA') && tema.s.startsWith('Utilizador, co-criador'), 'tema: título e subtítulo da intervenção em cima');
+t(tema.p === 'Pergunta 2 de 3', `tema: posição no rodapé (${tema.p})`);
+t(tema.a.includes('Hélder Palheira') && tema.a.includes('@nex7.dev') && tema.a.includes('@hc-healthcare.com'), 'tema: nome e os dois emails no rodapé');
+t(tema.o === 'Obrigado por participar', 'tema: «Obrigado por participar» em baixo');
+t(tema.f.includes('SPP Jost') && tema.ok, 'tema: títulos em Jost (fonte carregada)');
+t(tema.r, 'tema: rodapé visível sem fazer scroll');
+await rpc('votar_fechar', {p_sala: SALA_T, p_chave: CHAVE}); await sleep(4500);
+t((await G.ev(`document.getElementById('posicao').textContent`)) === '', 'tema: sem pergunta aberta, a posição desaparece');
 
 const E = await telemovel(`http://127.0.0.1:${PORT}/votar/`); await sleep(1500);
 t(await E.ev(`!!document.querySelector('form.entrar input')`), 'sem sala no endereço: pede o código');

@@ -62,6 +62,13 @@ t(r.j?.ok && r.j.votosApagados === true, 'mudar as opções de q1 apaga os votos
 r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: {...P1, opcoes: ['Sim', 'Não']}});
 t(r.j?.ok && r.j.votosApagados === false, 'reabrir a mesma definição não apaga nada');
 
+r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: {...P2, ordem: 4, total: 3}});
+t(r.j?.ok === false, 'ordem maior do que o total recusada');
+r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: {...P2, ordem: 2}});
+t(r.j?.ok === false, 'ordem sem total recusada');
+r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: {...P2, ordem: 2, total: 3}});
+const e2 = await rpc('votar_estado', {p_sala: SALA});
+t(r.j?.ok && r.j.votosApagados === false && e2.j?.pergunta?.ordem === 2 && e2.j.pergunta.total === 3, 'ordem e total chegam ao telemóvel e não apagam votos');
 r = await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE + 'x'});
 t(r.j?.ok === false, 'fechar com chave errada recusado');
 r = await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE});
