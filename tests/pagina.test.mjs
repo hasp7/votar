@@ -81,6 +81,19 @@ await F[1].ev(`document.querySelectorAll('.op')[3].click()`); await sleep(1500);
 r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q3'});
 t(r.contagens[3] === 1 && Number(r.media) === 4, `escala enviada: ${JSON.stringify(r.contagens)} média ${r.media}`);
 
+const P6 = {id: 'q6', tipo: 'ordenar', ordem: 3, total: 3, texto: 'Ordene por prioridade: o que lhe falta mais?', opcoes: ['Literacia em IA', 'Uso seguro e verificação', 'Co-criação de ferramentas', 'Avaliação e governação']};
+await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: P6}); await sleep(5000);
+await F[0].ev(`document.querySelectorAll('.op')[2].click()`); await F[0].ev(`document.querySelectorAll('.op')[0].click()`);
+const parcial = await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')+'|'+document.querySelector('.acoes .enviar').textContent+'|'+document.querySelector('.acoes .enviar').disabled`);
+t(parcial === '2.º,B,1.º,D|Faltam 2|true', `ordenar: os toques numeram por ordem (${parcial})`);
+await F[0].ev(`document.querySelectorAll('.op')[3].click()`);
+const completo = await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')+'|'+document.querySelector('.acoes .enviar').disabled`);
+t(completo === '2.º,4.º,1.º,3.º|false', `ordenar: com 3 escolhidas, a última fica sozinha em 4.º (${completo})`);
+await F[0].ev(`document.querySelector('.acoes .enviar').click()`); await sleep(1800);
+r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q6'});
+t(JSON.stringify(r.contagens) === '[2,0,3,1]', `ordenar: pontos registados ${JSON.stringify(r.contagens)}`);
+await F[0].ev(`document.querySelector('.limpar').click()`);
+t((await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')`)) === 'A,B,C,D', 'ordenar: «Recomeçar» limpa a ordem');
 await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE}); await sleep(5000);
 t((await F[2].ev(`document.querySelector('.espera')?.textContent||''`)).startsWith('Votação fechada'), 'fechar: os telemóveis mostram «Votação fechada»');
 

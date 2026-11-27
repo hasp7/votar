@@ -69,6 +69,15 @@ t(r.j?.ok === false, 'ordem sem total recusada');
 r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: {...P2, ordem: 2, total: 3}});
 const e2 = await rpc('votar_estado', {p_sala: SALA});
 t(r.j?.ok && r.j.votosApagados === false && e2.j?.pergunta?.ordem === 2 && e2.j.pergunta.total === 3, 'ordem e total chegam ao telemóvel e não apagam votos');
+const P5 = {id: 'q5', tipo: 'ordenar', texto: 'Ordene por prioridade', opcoes: ['A', 'B', 'C', 'D']};
+r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: P5});
+t(r.j?.ok, 'abrir pergunta de ordenar');
+for (const [resp, m] of [[[1, 0], 'ordenação incompleta'], [[1, 1, 2, 3], 'lugar repetido'], [[0, 1, 2, 4], 'opção fora do intervalo']]) {
+  r = await rpc('votar_votar', {p_sala: SALA, p_pergunta: 'q5', p_pid: pid(98), p_resposta: resp}); t(r.j?.ok === false, `ordenar: recusada ${m}`);
+}
+await Promise.all([[1, 0, 2, 3], [1, 2, 0, 3], [0, 1, 3, 2]].map((v, i) => rpc('votar_votar', {p_sala: SALA, p_pergunta: 'q5', p_pid: pid(200 + i), p_resposta: v})));
+r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q5'});
+t(r.j?.n === 3 && JSON.stringify(r.j.contagens) === '[6,8,3,1]' && JSON.stringify(r.j.primeiros) === '[1,2,0,0]', `ordenar: pontos ${JSON.stringify(r.j?.contagens)} e 1.os lugares ${JSON.stringify(r.j?.primeiros)}`);
 r = await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE + 'x'});
 t(r.j?.ok === false, 'fechar com chave errada recusado');
 r = await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE});
@@ -78,7 +87,7 @@ t(r.j?.ok && r.j.pergunta === null, 'depois de fechar, nenhum telemóvel vê per
 r = await rpc('votar_exportar', {p_sala: SALA, p_chave: CHAVE + 'x'});
 t(r.j?.ok === false, 'exportar sem a chave recusado');
 r = await rpc('votar_exportar', {p_sala: SALA, p_chave: CHAVE});
-t(r.j?.ok && r.j.perguntas.length === 3 && !JSON.stringify(r.j).includes('pid0'), 'exportar devolve 3 perguntas agregadas, sem identificadores');
+t(r.j?.ok && r.j.perguntas.length === 4 && !JSON.stringify(r.j).includes('pid0'), 'exportar devolve as 4 perguntas agregadas, sem identificadores');
 
 // a porta das tabelas tem de estar fechada
 for (const [path, hdr, m] of [['/rest/v1/votos', {}, 'tabela votos pelo esquema público'], ['/rest/v1/votos', {'Accept-Profile': 'votar'}, 'tabela votos pelo esquema votar'], ['/rest/v1/salas?select=chave_hash', {'Accept-Profile': 'votar'}, 'hashes das chaves']]) {
