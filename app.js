@@ -121,7 +121,8 @@
     const botoes = [];
     let escolha = new Set(guardado || []);
     const marcar = vals => botoes.forEach(b => b.setAttribute('aria-pressed', String(vals.has(+b.dataset.v))));
-    const registado = () => { ok.replaceChildren(el('b', {text: 'Voto registado.'}), el('span', {class: 'mudar', text: 'Pode mudar até a pergunta fechar.'})); ok.hidden = false; };
+    const registado = () => { ok.replaceChildren(el('b', {text: q.tipo === 'texto' ? 'Resposta enviada.' : 'Voto registado.'}), el('span', {class: 'mudar', text: 'Pode mudar até a pergunta fechar.'})); ok.hidden = false;
+      if (aEnviar) ok.scrollIntoView({block: 'center', behavior: 'smooth'}); };
 
     async function enviar(vals) {
       if (aEnviar) return;
@@ -138,7 +139,23 @@
 
     const kids = [el('h1', {text: q.texto})];
     let depois = null;
-    if (q.tipo === 'ordenar') {
+    if (q.tipo === 'texto') {
+      // resposta aberta: um campo por nome (q.opcoes), até 280 caracteres; o primeiro é obrigatório
+      kids.push(el('p', {class: 'dica', text: 'Responda em poucas palavras. Não escreva nomes nem dados de doentes.'}));
+      const btEnviar = el('button', {class: 'enviar', type: 'button', text: 'Enviar'});
+      const areas = [];
+      const atualizar = () => { btEnviar.disabled = !areas[0].value.trim(); areas.forEach(a => { a._conta.textContent = a.value.length + '/280'; }); };
+      q.opcoes.forEach((c, i) => {
+        const ta = el('textarea', {rows: '3', maxlength: '280', 'aria-label': c, oninput: () => { atualizar(); ok.hidden = true; }});
+        ta.value = (Array.isArray(guardado) && typeof guardado[i] === 'string') ? guardado[i] : '';
+        ta._conta = el('span', {class: 'conta'});
+        areas.push(ta);
+        kids.push(el('label', {class: 'campo'}, el('span', {class: 'campo-nome', text: c}), ta, ta._conta));
+      });
+      btEnviar.addEventListener('click', () => enviar(areas.map(a => a.value.trim())));
+      kids.push(btEnviar);
+      depois = atualizar;
+    } else if (q.tipo === 'ordenar') {
       const n = q.opcoes.length;
       let ordem = Array.isArray(guardado) && guardado.length === n ? guardado.slice() : [];
       kids.push(el('p', {class: 'dica', text: 'Toque pela ordem de prioridade: primeiro a mais importante.'}));
