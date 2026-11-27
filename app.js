@@ -137,7 +137,33 @@
     }
 
     const kids = [el('h1', {text: q.texto})];
-    if (q.tipo === 'escala') {
+    let depois = null;
+    if (q.tipo === 'ordenar') {
+      const n = q.opcoes.length;
+      let ordem = Array.isArray(guardado) && guardado.length === n ? guardado.slice() : [];
+      kids.push(el('p', {class: 'dica', text: 'Toque pela ordem de prioridade: primeiro a mais importante.'}));
+      const lista = el('div', {class: 'opcoes', role: 'group', 'aria-label': q.texto});
+      const btEnviar = el('button', {class: 'enviar', type: 'button', text: 'Enviar', onclick: () => enviar(ordem.slice())});
+      const pintar = () => {
+        botoes.forEach(b => { const i = +b.dataset.v, p = ordem.indexOf(i);
+          b.setAttribute('aria-pressed', String(p >= 0)); b.querySelector('.letra').textContent = p >= 0 ? (p + 1) + '.º' : LETRAS[i]; });
+        const falta = n - ordem.length;
+        btEnviar.disabled = falta > 0; btEnviar.textContent = falta > 0 ? (falta === 1 ? 'Falta 1' : `Faltam ${falta}`) : 'Enviar';
+      };
+      const btLimpar = el('button', {class: 'limpar', type: 'button', text: 'Recomeçar', onclick: () => { ordem = []; pintar(); ok.hidden = true; }});
+      q.opcoes.forEach((t, i) => {
+        const b = el('button', {class: 'op', type: 'button', 'data-v': String(i), 'aria-pressed': 'false',
+          onclick: () => {
+            const p = ordem.indexOf(i);
+            if (p >= 0) ordem.splice(p, 1); else ordem.push(i);
+            if (ordem.length === n - 1) ordem.push([...Array(n).keys()].find(k => !ordem.includes(k))); // a última fica sozinha em último
+            pintar(); ok.hidden = true;
+          }}, el('span', {class: 'letra', text: LETRAS[i]}), el('span', {text: t}));
+        botoes.push(b); lista.append(b);
+      });
+      kids.push(lista, el('div', {class: 'acoes'}, btLimpar, btEnviar));
+      depois = pintar;
+    } else if (q.tipo === 'escala') {
       kids.push(el('p', {class: 'dica', text: `Toque num número de ${q.min} a ${q.max}.`}));
       const linha = el('div', {class: 'escala opcoes', role: 'group', 'aria-label': q.texto});
       for (let v = q.min; v <= q.max; v++) {
@@ -167,7 +193,7 @@
     }
     kids.push(ok);
     vista.replaceChildren(...kids);
-    marcar(escolha);
+    if (depois) depois(); else marcar(escolha);
     if (guardado) registado();
   }
 
