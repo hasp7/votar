@@ -89,9 +89,10 @@
     if (t.autor || contactos.length) {
       const a = $('autor'); a.replaceChildren();
       if (t.autor) a.append(el('b', {text: String(t.autor)}));
-      contactos.forEach((c, i) => {
-        a.append(i === 0 && t.autor ? ' | ' : ' · ');
-        a.append(/^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(c) ? el('a', {href: 'mailto:' + c, text: c}) : document.createTextNode(c));
+      // contactos por baixo do nome, um por linha
+      contactos.forEach(c => {
+        a.append(el('span', {class: 'contacto'},
+          /^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(c) ? el('a', {href: 'mailto:' + c, text: c}) : document.createTextNode(c)));
       });
       $('rodape').hidden = false;
     }
