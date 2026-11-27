@@ -98,6 +98,7 @@ const tema = JSON.parse(await G.ev(`JSON.stringify({t:document.getElementById('t
 t(tema.t.startsWith('A Aplicabilidade da IA') && tema.s.startsWith('Utilizador, co-criador'), 'tema: título e subtítulo da intervenção em cima');
 t(tema.p === 'Pergunta 2 de 3', `tema: posição no rodapé (${tema.p})`);
 t(tema.a.includes('Hélder Palheira') && tema.a.includes('@nex7.dev') && tema.a.includes('@hc-healthcare.com'), 'tema: nome e os dois emails no rodapé');
+t(await G.ev(`(()=>{const b=document.querySelector('#autor b').getBoundingClientRect(),c=[...document.querySelectorAll('#autor .contacto')].map(x=>x.getBoundingClientRect());return c.length===2&&c[0].top>=b.bottom-1&&c[1].top>=c[0].bottom-1})()`), 'tema: cada email numa linha por baixo do nome');
 t(tema.o === 'Obrigado por participar', 'tema: «Obrigado por participar» em baixo');
 t(tema.f.includes('SPP Jost') && tema.ok, 'tema: títulos em Jost (fonte carregada)');
 t(tema.r, 'tema: rodapé visível sem fazer scroll');

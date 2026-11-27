@@ -41,4 +41,4 @@ h1{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600;color:var(-
 .op .letra{font-family:"SPP Jost","IBM Plex Sans",sans-serif}
 .enviar{background:var(--signal)}
 .obrigado{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:500;color:var(--mag);opacity:.85}
-footer{background:color-mix(in srgb,var(--bg) 88%,transparent)}
+footer{background:var(--bg);box-shadow:0 -6px 14px -10px rgba(14,43,48,.35)}
