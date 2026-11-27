@@ -107,6 +107,7 @@
 
   function mostrarEspera(fechada) {
     posicao(null);
+    document.body.classList.remove('com-pergunta');
     vista.replaceChildren(el('p', {class: 'espera'},
       el('b', {text: fechada ? 'Votação fechada. Obrigado.' : 'Ainda não há pergunta aberta.'}),
       fechada ? 'A próxima pergunta aparece aqui sozinha.' : 'Mantenha esta página aberta: a pergunta aparece sozinha.'));
@@ -114,12 +115,13 @@
 
   function mostrarPergunta(q) {
     posicao(q);
+    document.body.classList.add('com-pergunta');
     const guardado = (() => { try { return JSON.parse(store.get(chaveVoto(q)) || 'null'); } catch (e) { return null; } })();
     const ok = el('p', {class: 'ok', hidden: ''});
     const botoes = [];
     let escolha = new Set(guardado || []);
     const marcar = vals => botoes.forEach(b => b.setAttribute('aria-pressed', String(vals.has(+b.dataset.v))));
-    const registado = () => { ok.replaceChildren(el('b', {text: 'Voto registado.'}), ' Pode mudar até a pergunta fechar.'); ok.hidden = false; };
+    const registado = () => { ok.replaceChildren(el('b', {text: 'Voto registado.'}), el('span', {class: 'mudar', text: 'Pode mudar até a pergunta fechar.'})); ok.hidden = false; };
 
     async function enviar(vals) {
       if (aEnviar) return;

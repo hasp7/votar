@@ -102,8 +102,16 @@ t(await G.ev(`(()=>{const b=document.querySelector('#autor b').getBoundingClient
 t(tema.o === 'Obrigado por participar', 'tema: «Obrigado por participar» em baixo');
 t(tema.f.includes('SPP Jost') && tema.ok, 'tema: títulos em Jost (fonte carregada)');
 t(tema.r, 'tema: rodapé visível sem fazer scroll');
+t(await G.ev(`getComputedStyle(document.getElementById('titulo')).display==='none' && getComputedStyle(document.getElementById('subtitulo')).display!=='none'`), 'tema: com pergunta no ecrã, o cabeçalho fica só com o subtítulo');
+await G.ev(`document.querySelectorAll('.op')[0].click()`); await sleep(1800);
+const conf = JSON.parse(await G.ev(`JSON.stringify({ok:getComputedStyle(document.querySelector('.ok')).backgroundColor,op:getComputedStyle(document.querySelector('.op[aria-pressed=true]')).backgroundColor,
+  st:getComputedStyle(document.querySelector('.ok .mudar')).fontStyle,fs:parseFloat(getComputedStyle(document.querySelector('.ok .mudar')).fontSize),fb:parseFloat(getComputedStyle(document.querySelector('.ok b')).fontSize),
+  linha:document.querySelector('.ok .mudar').getBoundingClientRect().top>=document.querySelector('.ok b').getBoundingClientRect().bottom-1})`));
+t(conf.ok !== conf.op, `tema: «Voto registado» com cor diferente da resposta escolhida (${conf.ok} vs ${conf.op})`);
+t(conf.st === 'italic' && conf.fs < conf.fb && conf.linha, '«Pode mudar…» na linha de baixo, em itálico e mais pequeno');
 await rpc('votar_fechar', {p_sala: SALA_T, p_chave: CHAVE}); await sleep(4500);
 t((await G.ev(`document.getElementById('posicao').textContent`)) === '', 'tema: sem pergunta aberta, a posição desaparece');
+t(await G.ev(`getComputedStyle(document.getElementById('titulo')).display!=='none'`), 'tema: sem pergunta, o título volta ao cabeçalho');
 
 const E = await telemovel(`http://127.0.0.1:${PORT}/votar/`); await sleep(1500);
 t(await E.ev(`!!document.querySelector('form.entrar input')`), 'sem sala no endereço: pede o código');
