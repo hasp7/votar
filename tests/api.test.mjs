@@ -78,6 +78,20 @@ for (const [resp, m] of [[[1, 0], 'ordenação incompleta'], [[1, 1, 2, 3], 'lug
 await Promise.all([[1, 0, 2, 3], [1, 2, 0, 3], [0, 1, 3, 2]].map((v, i) => rpc('votar_votar', {p_sala: SALA, p_pergunta: 'q5', p_pid: pid(200 + i), p_resposta: v})));
 r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q5'});
 t(r.j?.n === 3 && JSON.stringify(r.j.contagens) === '[6,8,3,1]' && JSON.stringify(r.j.primeiros) === '[1,2,0,0]', `ordenar: pontos ${JSON.stringify(r.j?.contagens)} e 1.os lugares ${JSON.stringify(r.j?.primeiros)}`);
+const P7 = {id: 'q7', tipo: 'texto', texto: 'Que ferramenta criaria com IA?', opcoes: ['Objetivo principal', 'Impacto esperado']};
+r = await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: P7});
+t(r.j?.ok, 'abrir pergunta de texto (2 campos)');
+for (const [resp, m] of [[['', 'x'], 'primeiro campo vazio'], [['a'], 'número de campos errado'], [['a'.repeat(281), ''], 'texto com mais de 280'], [[1, 2], 'números em vez de texto']]) {
+  r = await rpc('votar_votar', {p_sala: SALA, p_pergunta: 'q7', p_pid: pid(97), p_resposta: resp}); t(r.j?.ok === false, `texto: recusado ${m}`);
+}
+r = await rpc('votar_votar', {p_sala: SALA, p_pergunta: 'q7', p_pid: pid(300), p_resposta: ['Triagem de alertas', 'Menos tempo ao telefone']});
+t(r.j?.ok, 'texto: resposta aceite');
+r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q7'});
+t(r.j?.n === 1 && !JSON.stringify(r.j).includes('Triagem'), 'texto: a API pública dá só o número de respostas, nunca os textos');
+r = await rpc('votar_textos', {p_sala: SALA, p_chave: CHAVE + 'x', p_pergunta: 'q7'});
+t(r.j?.ok === false, 'texto: ler os textos sem a chave recusado');
+r = await rpc('votar_textos', {p_sala: SALA, p_chave: CHAVE, p_pergunta: 'q7'});
+t(r.j?.ok && r.j.textos[0][0] === 'Triagem de alertas', 'texto: com a chave, o deck lê os textos');
 r = await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE + 'x'});
 t(r.j?.ok === false, 'fechar com chave errada recusado');
 r = await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE});
@@ -87,7 +101,7 @@ t(r.j?.ok && r.j.pergunta === null, 'depois de fechar, nenhum telemóvel vê per
 r = await rpc('votar_exportar', {p_sala: SALA, p_chave: CHAVE + 'x'});
 t(r.j?.ok === false, 'exportar sem a chave recusado');
 r = await rpc('votar_exportar', {p_sala: SALA, p_chave: CHAVE});
-t(r.j?.ok && r.j.perguntas.length === 4 && !JSON.stringify(r.j).includes('pid0'), 'exportar devolve as 4 perguntas agregadas, sem identificadores');
+t(r.j?.ok && r.j.perguntas.length === 5 && !JSON.stringify(r.j).includes('pid0') && JSON.stringify(r.j).includes('Triagem'), 'exportar (com chave) devolve as 5 perguntas, os textos e nenhum identificador');
 
 // a porta das tabelas tem de estar fechada
 for (const [path, hdr, m] of [['/rest/v1/votos', {}, 'tabela votos pelo esquema público'], ['/rest/v1/votos', {'Accept-Profile': 'votar'}, 'tabela votos pelo esquema votar'], ['/rest/v1/salas?select=chave_hash', {'Accept-Profile': 'votar'}, 'hashes das chaves']]) {

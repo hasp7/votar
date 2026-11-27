@@ -94,6 +94,14 @@ r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q6'});
 t(JSON.stringify(r.contagens) === '[2,0,3,1]', `ordenar: pontos registados ${JSON.stringify(r.contagens)}`);
 await F[0].ev(`document.querySelector('.limpar').click()`);
 t((await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')`)) === 'A,B,C,D', 'ordenar: «Recomeçar» limpa a ordem');
+const P8 = {id: 'q8', tipo: 'texto', texto: 'Se pudesse criar algo com IA para o seu serviço, o que seria?', opcoes: ['Objetivo principal', 'Impacto esperado']};
+await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: P8}); await sleep(5000);
+t((await F[1].ev(`document.querySelectorAll('textarea').length+'|'+document.querySelector('.enviar').disabled+'|'+document.querySelector('.dica').textContent`)) === '2|true|Responda em poucas palavras. Não escreva nomes nem dados de doentes.', 'texto: dois campos, envio bloqueado até haver objetivo, aviso de dados');
+await F[1].ev(`(()=>{const a=document.querySelectorAll('textarea');a[0].value='Resumo automático das passagens de turno';a[0].dispatchEvent(new Event('input'));a[1].value='Menos 15 minutos por turno';a[1].dispatchEvent(new Event('input'));document.querySelector('.enviar').click();})()`);
+await sleep(1800);
+t((await F[1].ev(`document.querySelector('.ok b').textContent+'|'+document.querySelector('.conta').textContent`)) === 'Resposta enviada.|40/280', 'texto: «Resposta enviada.» e contador de caracteres');
+r = await rpc('votar_textos', {p_sala: SALA, p_chave: CHAVE, p_pergunta: 'q8'});
+t(r.ok && r.textos[0][1] === 'Menos 15 minutos por turno', 'texto: os dois campos chegam ao deck');
 await rpc('votar_fechar', {p_sala: SALA, p_chave: CHAVE}); await sleep(5000);
 t((await F[2].ev(`document.querySelector('.espera')?.textContent||''`)).startsWith('Votação fechada'), 'fechar: os telemóveis mostram «Votação fechada»');
 
