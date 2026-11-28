@@ -102,3 +102,6 @@ body.com-tema .topo{display:none}
 .lista-bt{display:flex;align-items:center;justify-content:center;gap:8px}
 .lista-bt .icone{display:inline-block;width:20px;height:26px}.lista-bt .icone svg{width:100%;height:100%}
 .lista-msg{min-height:1.2em;color:var(--alarm);font-size:14px;margin:8px 0 0}
+.aviso{margin:-28px 0 18px;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--mag,var(--signal));text-align:left}
+.aviso p{margin:0;font-size:17px;line-height:1.45;color:var(--ink)}
+.aviso-link{display:flex;align-items:center;justify-content:center;box-sizing:border-box;margin-top:12px;padding:10px 14px;text-align:center;text-decoration:none;overflow-wrap:anywhere}

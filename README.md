@@ -34,6 +34,22 @@ Uma sala cujo primeiro nível tem pasta em `temas/` usa o tema dessa pasta (ex.:
   pasta (a CSP só deixa carregar do próprio site); fontes com a licença ao lado (`OFL.txt`).
 - «Pergunta x de y» no rodapé, à direita, quando o deck envia `ordem` e `total` ao abrir a pergunta.
 
+## Aviso da sala
+
+Depois da sessão, o dono da sala pode deixar um aviso a quem ainda tem a página aberta: um texto curto
+(até 280 caracteres) e, se quiser, um link `https` com rótulo. Aparece fora das perguntas, por cima do
+cartão da lista de espera, e chega aos separadores abertos sem recarregar (a página lê-o a cada ciclo).
+Separadores carregados antes desta versão só o veem depois de recarregar.
+
+```js
+// na consola do browser, com a chave da sala (nunca em ficheiros)
+await fetch('https://tlqnhpvdzgyqwmextemq.supabase.co/rest/v1/rpc/votar_aviso', {method: 'POST',
+  headers: {apikey: '<chave_publicavel>', 'Content-Type': 'application/json'},
+  body: JSON.stringify({p_sala: 'spp26', p_chave: '<chave da sala>', p_texto: 'O protótipo está pronto.',
+    p_link: 'https://…', p_rotulo: 'Ver o protótipo'})}).then(r => r.json());
+// p_texto vazio retira o aviso
+```
+
 ## Privacidade
 
 - Cada telemóvel tem só um código aleatório guardado no próprio telemóvel. Não se pede nome,
@@ -52,8 +68,8 @@ Uma sala cujo primeiro nível tem pasta em `temas/` usa o tema dessa pasta (ex.:
 | `app.js`, `app.css` | Lógica e estilo; sem dependências |
 | `supabase/migrations/` | Esquema da base de dados (fonte de verdade) |
 | `temas/<evento>/` | Tema de um evento (ver acima) |
-| `tests/api.test.mjs` | 34 verificações da API: votos válidos e inválidos, chave, tabelas fechadas |
-| `tests/pagina.test.mjs` | 27 verificações da página, com tema e sem tema, com 3 telemóveis simulados contra a base real |
+| `tests/api.test.mjs` | 66 verificações da API: votos válidos e inválidos, chave, tabelas fechadas |
+| `tests/pagina.test.mjs` | 57 verificações da página, com tema e sem tema, com 3 telemóveis simulados contra a base real |
 
 ```bash
 node tests/api.test.mjs https://tlqnhpvdzgyqwmextemq.supabase.co <chave_publicavel>
