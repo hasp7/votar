@@ -43,10 +43,12 @@ body{font:17px/1.55 "IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;color:var
   background:radial-gradient(760px 560px at 100% 0%,var(--wash1),transparent 66%),
              radial-gradient(760px 560px at 0% 100%,var(--wash2),transparent 64%),var(--bg);
   background-attachment:fixed;min-height:100vh}
-body::before{content:"";position:fixed;left:0;right:0;top:0;height:6px;background:var(--brand-grad);z-index:5}
+/* filete da marca: enche também a zona segura do topo (iPhone), para o conteúdo não passar por baixo da hora no scroll */
+:root{--topo:calc(env(safe-area-inset-top,0px) + 8px)}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:var(--topo);background:var(--brand-grad);z-index:5}
 body::after{content:"";position:fixed;right:14px;bottom:14px;width:190px;height:220px;
   background:url(../../../temas/spp26/velas.png) no-repeat right bottom/contain;opacity:.08;pointer-events:none;z-index:0}
-.pagina{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:28px 16px 40px}
+.pagina{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
 a{color:var(--signal);text-underline-offset:2px}
 a:hover{text-decoration-thickness:2px}
 :focus-visible{outline:3px solid var(--mag);outline-offset:2px;border-radius:4px}
