@@ -149,6 +149,18 @@
 
   // ---------------------------------------------------------------- com sala
   let ecra = '', tinhaPergunta = false, falhas = 0, timer = null, aEnviar = false;
+  let aviso = null, avisoK = '';
+  // aviso da sala (votar_aviso): texto curto e um link opcional, só https; fica por cima da lista de espera
+  function pintarAviso() {
+    vista.querySelectorAll('.aviso').forEach(x => x.remove());
+    const esp = vista.querySelector('.espera');
+    if (!aviso || !aviso.texto || !esp) return;
+    const caixa = el('div', {class: 'aviso', role: 'status'}, el('p', {text: String(aviso.texto)}));
+    if (typeof aviso.link === 'string' && /^https:\/\/[^\s<>"'`]+$/.test(aviso.link))
+      caixa.append(el('a', {class: 'enviar aviso-link', href: aviso.link, target: '_blank', rel: 'noopener noreferrer',
+        text: aviso.rotulo ? String(aviso.rotulo) : aviso.link.replace(/^https:\/\//, '')}));
+    esp.after(caixa);
+  }
   const defKey = q => [q.id, q.tipo, q.texto, JSON.stringify(q.opcoes), q.maxEscolhas, q.min, q.max, q.ordem, q.total].join('|');
   const chaveVoto = q => 'votar:' + sala + ':' + defKey(q);
 
@@ -160,6 +172,7 @@
     vista.replaceChildren(el('p', {class: 'espera'},
       el('b', {text: fechada ? 'Votação fechada. Obrigado.' : 'Ainda não há pergunta aberta.'}),
       fechada ? 'A próxima pergunta aparece aqui sozinha.' : 'Mantenha esta página aberta: a pergunta aparece sozinha.'));
+    pintarAviso();
   }
 
   function mostrarPergunta(q) {
@@ -319,6 +332,8 @@
       falhas = 0; msg('');
       if (!r || r.ok === false) { vista.replaceChildren(el('p', {class: 'espera', text: 'Endereço de sala inválido.'})); return; }
       const q = r.pergunta;
+      const a = r.aviso && typeof r.aviso === 'object' ? r.aviso : null, ak = a ? JSON.stringify(a) : '';
+      if (ak !== avisoK) { aviso = a; avisoK = ak; if (!q) pintarAviso(); }
       if (!q) {
         const alvo = tinhaPergunta || r.perguntas > 0 ? 'fechada' : 'espera';
         if (ecra !== alvo) { ecra = alvo; mostrarEspera(alvo === 'fechada'); }

@@ -125,6 +125,25 @@ r = await rpc('votar_estado', {p_sala: SALA}); const r3 = await rpc('votar_expor
 t(!JSON.stringify(r.j).includes('@') && !JSON.stringify(r3.j).includes('alguem@'), 'lista: os emails não aparecem no estado nem na exportação dos votos');
 r = await rpc('votar_lista_apagar', {p_sala: SALA, p_chave: CHAVE});
 t(r.j?.ok && r.j.apagados === 1, 'lista: apagar com a chave');
+r = await rpc('votar_estado', {p_sala: SALA});
+t(r.j?.ok && 'aviso' in r.j && r.j.aviso === null, 'aviso: sala sem aviso devolve aviso nulo');
+r = await rpc('votar_aviso', {p_sala: SALA, p_chave: CHAVE + 'x', p_texto: 'Olá'});
+t(r.j?.ok === false && r.j.erro === 'chave errada', 'aviso: sem a chave recusado');
+for (const [args, m] of [[{p_texto: 'x'.repeat(281)}, 'texto com mais de 280'], [{p_texto: 'Olá', p_link: 'http://example.org'}, 'link sem https'],
+  [{p_texto: 'Olá', p_link: 'javascript:alert(1)'}, 'link javascript:'], [{p_texto: 'Olá', p_link: 'https://a.pt/"><b>'}, 'link com aspas e <'],
+  [{p_texto: 'Olá', p_rotulo: 'Abrir'}, 'rótulo sem link']]) {
+  r = await rpc('votar_aviso', {p_sala: SALA, p_chave: CHAVE, ...args});
+  t(r.j?.ok === false, `aviso: recusado ${m}`);
+}
+r = await rpc('votar_aviso', {p_sala: SALA, p_chave: CHAVE, p_texto: '  Ainda pode entrar na lista.  '});
+const av1 = await rpc('votar_estado', {p_sala: SALA});
+t(r.j?.ok && av1.j?.aviso?.texto === 'Ainda pode entrar na lista.' && !('link' in av1.j.aviso), 'aviso: só texto, aparado, chega ao estado');
+r = await rpc('votar_aviso', {p_sala: SALA, p_chave: CHAVE, p_texto: 'Já está pronto.', p_link: 'https://hasp7.github.io/spp26/', p_rotulo: 'Ver o protótipo'});
+const av2 = await rpc('votar_estado', {p_sala: SALA});
+t(r.j?.ok && av2.j?.aviso?.link === 'https://hasp7.github.io/spp26/' && av2.j.aviso.rotulo === 'Ver o protótipo', 'aviso: com link e rótulo');
+r = await rpc('votar_aviso', {p_sala: SALA, p_chave: CHAVE, p_texto: ''});
+const av3 = await rpc('votar_estado', {p_sala: SALA});
+t(r.j?.ok && av3.j?.aviso === null, 'aviso: texto vazio retira o aviso');
 r = await rpc('votar_limpar', {p_sala: SALA, p_chave: CHAVE});
 t(r.j?.ok && r.j.apagados > 0, `limpar apaga os votos da sala (${r.j?.apagados})`);
 console.log(`\n${ok} OK, ${falhas} falhas · sala de teste: ${SALA}`);

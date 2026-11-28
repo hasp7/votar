@@ -165,6 +165,16 @@ const lx = await rpc('votar_lista_exportar', {p_sala: SALA_T, p_chave: CHAVE});
 t(lx.ok && JSON.stringify(lx.emails) === '["teste.lista@example.org"]', 'lista: o orador exporta o email (normalizado) com a chave');
 await G.send('Page.reload'); await sleep(3500);
 t((await G.ev(`document.querySelector('.lista .lista-tit')?.textContent||''`)) === 'Está na lista de espera.', 'lista: ao recarregar, lembra que já se inscreveu');
+// aviso da sala: chega ao separador já aberto, sem recarregar, por cima do cartão da lista
+await rpc('votar_aviso', {p_sala: SALA_T, p_chave: CHAVE, p_texto: 'Ainda pode entrar na lista de espera.'}); await sleep(5000);
+t(await G.ev(`(()=>{const a=document.querySelector('.aviso');return !!a && a.textContent==='Ainda pode entrar na lista de espera.' && !a.querySelector('a') && a.nextElementSibling?.classList.contains('lista');})()`),
+  'aviso: aparece sem recarregar, por cima da lista, sem link');
+await rpc('votar_aviso', {p_sala: SALA_T, p_chave: CHAVE, p_texto: 'O protótipo está pronto.', p_link: 'https://example.org/spp26/', p_rotulo: 'Ver o protótipo'}); await sleep(5000);
+const av = await G.ev(`(()=>{const l=document.querySelector('.aviso a');return l?{h:l.getAttribute('href'),t:l.textContent,tg:l.target,r:l.rel,n:document.querySelectorAll('.aviso').length,w:document.documentElement.scrollWidth}:null;})()`);
+t(av && av.h === 'https://example.org/spp26/' && av.t === 'Ver o protótipo' && av.tg === '_blank' && /noopener/.test(av.r) && av.n === 1, 'aviso: link clicável com rótulo, um só aviso');
+t(av && av.w <= 390, `aviso: cabe nos 390 px sem deslocamento horizontal (${av?.w})`);
+await rpc('votar_aviso', {p_sala: SALA_T, p_chave: CHAVE, p_texto: null}); await sleep(5000);
+t(await G.ev(`!document.querySelector('.aviso') && !!document.querySelector('.lista')`), 'aviso: retirado, a lista fica');
 const la = await rpc('votar_lista_apagar', {p_sala: SALA_T, p_chave: CHAVE});
 t(la.ok && la.apagados === 1, 'lista: o orador apaga a lista com a chave');
 
