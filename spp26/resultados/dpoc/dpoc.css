@@ -1,0 +1,116 @@
+/* Protótipo DPOC: componentes próprios por cima de ../comum/spp.css */
+.faixa{position:sticky;top:6px;z-index:4;margin:0 0 22px;padding:10px 14px;border-radius:12px;background:var(--surface);border:2px solid var(--mag);
+  color:var(--ink);font-size:14.5px;box-shadow:var(--sombra)}
+.faixa b{color:var(--mag)}
+.passos{counter-reset:passo}
+.passo>h2::before{counter-increment:passo;content:counter(passo);display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  margin-right:10px;border-radius:50%;background:var(--signal);color:var(--surface);font-size:16px;vertical-align:3px}
+.intro{max-width:70ch}
+
+/* utente */
+.utente-grelha{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.codigo{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:700;font-size:clamp(24px,5vw,30px);letter-spacing:.06em;color:var(--head);font-variant-numeric:tabular-nums;word-break:break-all}
+.campo{display:flex;flex-direction:column;gap:4px;font-size:14.5px;color:var(--muted)}
+.campo input,.campo select,.inline input{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 12px;min-height:44px;width:100%}
+.campo input:focus,.campo select:focus,.inline input:focus{border-color:var(--signal);outline:none}
+.inline{display:flex;gap:8px;flex-wrap:wrap}
+.inline input{flex:1 1 180px;width:auto;text-transform:uppercase;letter-spacing:.04em}
+.campos{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.ficheiro-bt{position:relative;overflow:hidden}
+.ficheiro-bt input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ficheiro-bt:focus-within{outline:3px solid var(--mag);outline-offset:2px}
+
+/* escalas */
+.escalas{display:flex;flex-direction:column;gap:18px}
+.escala-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:10px}
+.escala-cab h3{font-size:22px;margin:0}
+.escala-cab .nome{display:block;font-family:"IBM Plex Sans",sans-serif;font-weight:400;font-size:14.5px;color:var(--muted);letter-spacing:0;margin-top:2px}
+.escala-cab p{margin:4px 0 0}
+.resultado{flex:none;min-width:110px;text-align:center;padding:8px 12px;border-radius:12px;background:var(--signal-soft);color:var(--signal);
+  font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:700;font-size:19px;font-variant-numeric:tabular-nums;line-height:1.25}
+.resultado.acima{background:var(--mag-soft);color:var(--mag)}
+.resultado.incompleto{background:var(--alarm-soft);color:var(--alarm);font-size:15px}
+.marca{margin:10px 0 0}
+.limiares{margin:10px 0 0;padding-left:18px}
+.escala-bts{margin:10px 0 6px}
+.bt.pequeno{min-height:36px;padding:6px 12px;font-size:14px;border-width:1.5px}
+.det{margin-top:8px}
+.refs{font-size:14.5px}
+.refs li{overflow-wrap:anywhere}
+
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.itens{display:grid;gap:10px 18px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.item legend{display:flex;gap:8px;align-items:baseline;font-size:15.5px;font-weight:600;margin-bottom:6px;padding:0}
+.item .n{flex:none;font-size:12.5px;font-weight:600;color:var(--muted);min-width:18px}
+.ancoras{margin:0 0 8px}
+.seg{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.seg.largo{grid-template-columns:repeat(3,1fr)}
+.seg .op{position:relative}
+.seg input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seg label{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:44px;border:2px solid var(--line);border-radius:10px;background:var(--bg);
+  font-variant-numeric:tabular-nums;cursor:pointer;user-select:none;text-align:center;font-size:15px;padding:4px}
+.seg label b{font-size:17px}
+.seg input:checked+label{background:var(--signal);border-color:var(--signal);color:var(--surface)}
+.seg input:focus-visible+label{outline:3px solid var(--mag);outline-offset:2px}
+.seg label:hover{border-color:var(--signal)}
+.legenda-lcadl{list-style:none;padding:0;margin:4px 0 6px;display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted)}
+.legenda-lcadl b{color:var(--ink)}
+h4.dom{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600;color:var(--head);font-size:16.5px;margin:16px 0 6px;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.subtotal{font-family:"IBM Plex Sans",sans-serif;font-weight:600;color:var(--signal);font-variant-numeric:tabular-nums;font-size:15px}
+.item.global{margin-top:14px}
+
+.unica{display:flex;flex-direction:column;gap:8px}
+.linha-op{position:relative}
+.linha-op input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.linha-op label{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer;font-size:15.5px}
+.linha-op label b{flex:none;font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600;color:var(--head);min-width:58px}
+.linha-op input:checked+label{border-color:var(--signal);background:var(--signal-soft)}
+.linha-op input:checked+label b{color:var(--signal)}
+.linha-op input:focus-visible+label{outline:3px solid var(--mag);outline-offset:2px}
+
+.acao-form{position:sticky;bottom:0;z-index:3;margin-top:18px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 -8px 20px -14px rgba(14,43,48,.45);
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.acao-form .campo{flex:0 1 190px}
+#form-msg{flex:1 1 220px;color:var(--alarm);font-size:14px;margin:0}
+
+/* evolução */
+.delta{font-size:13px;color:var(--muted);white-space:nowrap}
+.delta.relevante{color:var(--mag);font-weight:600}
+.acoes{white-space:nowrap;text-align:right}
+.lig{font:inherit;font-size:14px;background:none;border:0;color:var(--signal);text-decoration:underline;cursor:pointer;padding:4px 6px}
+.graficos{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:18px}
+.grafico{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 10px 4px}
+.grafico figcaption{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600;color:var(--head);font-size:15px;margin:0 0 2px 4px}
+.grafico svg{display:block;width:100%;height:auto}
+.grafico .eixo{stroke:var(--line);stroke-width:1}
+.grafico .limiar{stroke:var(--mag);stroke-width:1.4;stroke-dasharray:4 4}
+.grafico .linha{fill:none;stroke:var(--signal);stroke-width:2.5;stroke-linejoin:round}
+.grafico .ponto{fill:var(--surface);stroke:var(--signal);stroke-width:2.5}
+.grafico .tick{font-size:10.5px;fill:var(--muted);font-family:"IBM Plex Sans",sans-serif}
+.grafico .limiar-t{fill:var(--mag)}
+.grafico .val{font-size:11.5px;font-weight:600;fill:var(--ink);font-family:"IBM Plex Sans",sans-serif}
+.legenda-ev{font-size:14px;color:var(--muted);margin-top:10px}
+#estado-ficheiro.pendente{color:var(--alarm);font-weight:600}
+pre.fhir{max-height:340px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.45}
+.estado{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:6;max-width:min(560px,calc(100% - 32px));margin:0;padding:10px 16px;border-radius:12px;background:var(--band);color:#fff;font-size:15px;box-shadow:var(--sombra)}
+.estado:empty{display:none}
+.so-impressao{display:none}
+
+@media (max-width:600px){
+  .faixa{position:static}
+  .escala-cab{flex-direction:column}
+  .resultado{align-self:stretch;text-align:left}
+  .seg label{min-height:46px}
+  .tabela{font-size:14px}
+  .tabela th,.tabela td{padding:7px 6px}
+  .acoes .lig{display:block;padding:2px 4px}
+  .acao-form{position:static;box-shadow:none}
+  .tabela .sg{display:none}
+  .tabela .delta,.tabela .pctl{display:block}
+}
+@media print{
+  .ecra,.estado{display:none!important}
+  .so-impressao{display:block}
+  .faixa{position:static}
+  .grafico{break-inside:avoid}
+}

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Protótipo ilustrativo de monitorização do doente com DPOC com CAT, mMRC, SGRQ e LCADL, nascido de uma ideia da sala na sessão do Núcleo de Enfermeiros do 42.º Congresso de Pneumologia. Só casos fictícios.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Monitorização DPOC · protótipo Wild card">
+<meta property="og:description" content="CAT, mMRC, SGRQ e LCADL num só registo, com código pseudónimo e ficheiro FHIR. Protótipo ilustrativo, só casos fictícios.">
+<meta property="og:image" content="https://hasp7.github.io/votar/spp26/resultados/og.png">
+<meta property="og:url" content="https://hasp7.github.io/votar/spp26/resultados/dpoc/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#006E61">
+<title>Monitorização DPOC · protótipo</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../comum/spp.css">
+<link rel="stylesheet" href="dpoc.css">
+<script src="../comum/comum.js" defer></script>
+<script src="escalas.js" defer></script>
+<script src="dpoc.js" defer></script>
+</head>
+<body>
+<a class="salto" href="#conteudo">Saltar para o conteúdo</a>
+<div class="pagina">
+  <header class="cab ecra">
+    <div class="cab-txt">
+      <p class="trilho"><a href="../">← Resultados da sessão</a> · <a href="../como-foi-construido/">Como foi construído</a></p>
+      <p class="evento">Protótipo Wild card · 42.º Congresso de Pneumologia · Núcleo de Enfermeiros</p>
+      <h1>Monitorização do doente com DPOC</h1>
+      <p class="sub">CAT, mMRC, SGRQ e LCADL num só registo</p>
+    </div>
+    <div class="cab-lado">
+      <span class="etiqueta mag">Wild card · ideia da sala</span>
+      <button type="button" class="tema-bt" data-tema>☾ Modo escuro</button>
+    </div>
+  </header>
+
+  <p class="faixa ecra" role="note"><b>Protótipo ilustrativo, gerado com IA generativa, não validado clinicamente.</b> Use só casos fictícios. Esta página não envia nem guarda dados: tudo fica na memória do separador até descarregar o ficheiro.</p>
+
+  <main id="conteudo" class="passos ecra">
+    <section class="intro">
+      <p>Nasceu de uma resposta à pergunta Wild card: <i>«Monitorização de doente DPOC, com escala CAT, mMRC, SGRQ e LCADL», para «gerar dados de avaliação da condição clínica do doente»</i>. Outras três respostas da sala iam no mesmo sentido: escalas, monitorização mensal e registo mais fácil de consultar.</p>
+      <p class="muted">Cada escala tem descrição, modo de usar e bibliografia, que abrem quando precisar. Os limiares e as diferenças mínimas mostrados vêm só de fontes confirmadas.</p>
+    </section>
+
+    <section class="passo" id="utente" aria-labelledby="h-utente">
+      <h2 id="h-utente">Utente</h2>
+      <div class="utente-grelha">
+        <div class="cartao">
+          <h3>Começar</h3>
+          <p class="muted pequeno">Gere um código novo, escreva um que já exista, ou abra o ficheiro de um utente.</p>
+          <div class="bts">
+            <button type="button" class="bt" id="gerar">Gerar código pseudónimo</button>
+            <button type="button" class="bt sec" id="ficticio">Carregar caso fictício</button>
+          </div>
+          <form id="usar-codigo" class="inline" autocomplete="off" novalidate>
+            <label class="sr" for="codigo-input">Código pseudónimo existente</label>
+            <input id="codigo-input" placeholder="DPOC-XXXX-XXXX" spellcheck="false" autocapitalize="characters" maxlength="16">
+            <button type="submit" class="bt sec">Usar código</button>
+          </form>
+          <p><span class="bt sec ficheiro-bt">Abrir ficheiro FHIR (.json)<input type="file" id="ficheiro" accept=".json,application/json,application/fhir+json" aria-label="Abrir ficheiro FHIR do utente"></span></p>
+        </div>
+        <div class="cartao" id="utente-ativo" hidden>
+          <h3>A trabalhar com</h3>
+          <p class="codigo" id="codigo"></p>
+          <p id="tag-ficticio" hidden><span class="etiqueta alarme">Caso fictício</span></p>
+          <div class="campos">
+            <label class="campo"><span>Ano de nascimento (opcional)</span><input type="number" id="ano" min="1900" max="2026" inputmode="numeric" placeholder="aaaa"></label>
+            <label class="campo"><span>Sexo (opcional)</span>
+              <select id="sexo"><option value="">Não indicado</option><option value="female">Feminino</option><option value="male">Masculino</option><option value="other">Outro</option><option value="unknown">Desconhecido</option></select></label>
+          </div>
+          <p class="pequeno muted">Só o ano, não a data. O sexo ajuda a ler o domínio doméstico da LCADL. Nome, número de utente e contactos não entram aqui.</p>
+        </div>
+      </div>
+      <details class="cartao-det">
+        <summary>Porquê um código e não o nome? Boas práticas de identificação</summary>
+        <div>
+          <ul>
+            <li><b>Pseudonimização.</b> O código é aleatório e gerado no próprio dispositivo (32<sup>7</sup> combinações). O último carácter é de controlo e apanha erros de transcrição. A tabela que liga o código à pessoa fica no sistema do serviço, à parte, como pede a definição de pseudonimização do RGPD (art. 4.º, n.º 5). Dados pseudonimizados continuam a ser dados pessoais.</li>
+            <li><b>Minimização.</b> Só se pede o que a monitorização usa: as escalas, a data e, se quiser, o ano de nascimento e o sexo (RGPD, art. 5.º, n.º 1, alínea c).</li>
+            <li><b>Proteção desde a conceção.</b> Não há servidor, contas, cookies nem armazenamento no browser. A política de segurança da página bloqueia qualquer ligação à rede. Os dados só saem pelo ficheiro que descarregar (RGPD, art. 25.º).</li>
+            <li><b>Interoperabilidade.</b> O ficheiro segue HL7 FHIR R4: <code>Patient</code> só com o identificador pseudónimo, um <code>QuestionnaireResponse</code> por escala e uma <code>Observation</code> com o total. Vai marcado como dados de teste (<code>HTEST</code>) e o protótipo recusa ficheiros sem essa marca.</li>
+            <li><b>O que falta para uso real.</b> Códigos LOINC confirmados, definições <code>Questionnaire</code> publicadas, integração com o processo clínico (por exemplo, o SClínico), avaliação de impacto sobre a proteção de dados e enquadramento como dispositivo médico. Ver <a href="../como-foi-construido/#riscos">riscos e limitações</a>.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="passo" id="avaliacao" aria-labelledby="h-avaliacao" hidden>
+      <h2 id="h-avaliacao">Avaliação</h2>
+      <p class="muted">Preencha as escalas que aplicou hoje; as outras ficam vazias. O total de cada escala calcula-se à medida.</p>
+      <div class="escalas" id="escalas"></div>
+      <div class="acao-form">
+        <label class="campo"><span>Data da avaliação</span><input type="date" id="data" required></label>
+        <button type="button" class="bt" id="guardar">Juntar à evolução</button>
+        <button type="button" class="bt sec" id="limpar">Limpar tudo</button>
+        <p id="form-msg" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="passo" id="evolucao" aria-labelledby="h-evolucao" hidden>
+      <h2 id="h-evolucao">Evolução <span class="muted pequeno" id="n-avaliacoes"></span></h2>
+      <p id="evolucao-vazia" class="muted">Ainda não há avaliações. Junte a primeira, ou abra o ficheiro do utente.</p>
+      <div id="tabela-wrap" class="cartao rolar" hidden>
+        <table class="tabela" id="tabela-evolucao">
+          <caption class="sr">Totais por avaliação e variação face à anterior</caption>
+          <thead><tr><th scope="col">Data</th><th scope="col" class="num">CAT</th><th scope="col" class="num">mMRC</th><th scope="col" class="num">SGRQ</th><th scope="col" class="num">LCADL</th><th scope="col" class="nao-imprimir"><span class="sr">Ações</span></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="legenda-ev">▲ ▼ variação face à avaliação anterior da mesma escala. <b class="mag">●</b> igual ou acima da diferença mínima importante: CAT 2 pontos (Kon 2014), SGRQ 4 (Jones 2005), LCADL 3 (Gulart 2020). Para o mMRC não há valor estabelecido nas fontes consultadas. Em todas as escalas, mais alto quer dizer pior.</p>
+      </div>
+      <div class="graficos" id="graficos"></div>
+      <p class="legenda-ev">Linhas tracejadas: limiares de sintomas do GOLD (CAT 10, mMRC 2). São informação, não recomendações: a decisão clínica é da equipa.</p>
+    </section>
+
+    <section class="passo" id="exportar" aria-labelledby="h-exportar" hidden>
+      <h2 id="h-exportar">Guardar e partilhar</h2>
+      <div class="cartao">
+        <p>O ficheiro FHIR leva o histórico todo do utente. Na próxima avaliação, abra-o, junte a avaliação nova e descarregue outra vez.</p>
+        <div class="bts">
+          <button type="button" class="bt" id="descarregar">Descarregar ficheiro FHIR</button>
+          <button type="button" class="bt sec" id="imprimir">Imprimir ou guardar PDF</button>
+        </div>
+        <p id="estado-ficheiro" class="pequeno"></p>
+        <details><summary>Ver o último ficheiro descarregado</summary><div><pre class="fhir" id="fhir-pre">Ainda não descarregou nenhum ficheiro.</pre></div></details>
+      </div>
+    </section>
+  </main>
+
+  <section id="relatorio" class="so-impressao" aria-hidden="true"></section>
+</div>
+<footer class="rodape ecra">
+  <span><b>Hélder Palheira</b> · helder.palheira@nex7.dev · helder.palheira@hc-healthcare.com</span>
+  <span>Protótipo ilustrativo · v0.1 · 28/11/2026</span>
+</footer>
+<p id="estado" class="estado" role="status" aria-live="polite"></p>
+</body>
+</html>
