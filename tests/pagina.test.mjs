@@ -153,7 +153,8 @@ t((await G.ev(`document.getElementById('posicao').textContent`)) === '', 'tema: 
 t(await G.ev(`getComputedStyle(document.getElementById('titulo')).display!=='none'`), 'tema: sem pergunta, o título volta ao cabeçalho');
 await sleep(1500);
 t(await G.ev(`!!document.querySelector('.lista .selo svg') && document.querySelector('.lista .lista-bt').textContent.includes('lista de espera')`), 'lista: depois do fecho aparece o cartão com o carimbo e o botão');
-await G.ev(`document.querySelector('.lista .lista-bt').click()`); await sleep(300);
+t(await G.ev(`(()=>{const i=document.querySelector('.lista input[type=email]');return !!i && i.offsetHeight>0 && !!document.querySelector('.lista input[type=checkbox]') && document.activeElement!==i;})()`),
+  'lista: o campo do email aparece logo, sem clicar, e sem abrir o teclado sozinho');
 t(await G.ev(`document.querySelector('.lista .enviar').disabled`), 'lista: «Inscrever» bloqueado sem email e sem consentimento');
 await G.ev(`(()=>{const i=document.querySelector('.lista input[type=email]');i.value='nao-e-email';i.dispatchEvent(new Event('input'));const c=document.querySelector('.lista input[type=checkbox]');c.checked=true;c.dispatchEvent(new Event('change'));document.querySelector('.lista .enviar').click();})()`);
 await sleep(1500);
