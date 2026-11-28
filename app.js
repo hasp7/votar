@@ -124,7 +124,7 @@
     const formulario = () => {
       const inp = el('input', {type: 'email', autocomplete: 'email', inputmode: 'email', placeholder: 'nome@exemplo.pt', 'aria-label': 'Email'});
       const chk = el('input', {type: 'checkbox'});
-      const bt = el('button', {class: 'enviar', type: 'button', text: 'Inscrever'});
+      const bt = el('button', {class: 'enviar lista-bt', type: 'button'}, icone(), ' ' + (L.botao || 'Entrar na lista de espera'));
       const msgL = el('p', {class: 'lista-msg', role: 'status'});
       const upd = () => { bt.disabled = !(chk.checked && inp.value.trim()); };
       inp.addEventListener('input', upd); chk.addEventListener('change', upd); upd();
@@ -136,13 +136,13 @@
           else { msgL.textContent = r && r.erro === 'email inválido' ? 'Confirme o email.' : 'Não foi possível inscrever. Tente outra vez.'; upd(); }
         } catch (e) { msgL.textContent = 'Sem ligação. Tente outra vez.'; upd(); }
       });
+      // o campo aparece logo, sem passo intermédio; sem foco automático (não abrir o teclado sozinho)
       caixa.replaceChildren(selo(L.selo || 'Wild card'), el('b', {class: 'lista-tit', text: L.titulo || 'Lista de espera'}),
+        el('p', {text: L.texto || ''}),
         el('label', {class: 'campo'}, el('span', {class: 'campo-nome', text: 'Email'}), inp),
         el('label', {class: 'aceito'}, chk, el('span', {text: L.consentimento || ''})), bt, msgL);
-      setTimeout(() => inp.focus(), 50);
     };
-    caixa.replaceChildren(selo(L.selo || 'Wild card'), el('b', {class: 'lista-tit', text: L.titulo || 'Lista de espera'}),
-      el('p', {text: L.texto || ''}), el('button', {class: 'enviar lista-bt', type: 'button', onclick: formulario}, icone(), ' ' + (L.botao || 'Entrar na lista de espera')));
+    formulario();
     return caixa;
   }
   const posicao = q => { const p = q && q.ordem && q.total ? `Pergunta ${q.ordem} de ${q.total}` : ''; $('posicao').textContent = p; if (p) $('rodape').hidden = false; };

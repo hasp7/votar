@@ -69,7 +69,7 @@ await fetch('https://tlqnhpvdzgyqwmextemq.supabase.co/rest/v1/rpc/votar_aviso', 
 | `supabase/migrations/` | Esquema da base de dados (fonte de verdade) |
 | `temas/<evento>/` | Tema de um evento (ver acima) |
 | `tests/api.test.mjs` | 66 verificações da API: votos válidos e inválidos, chave, tabelas fechadas |
-| `tests/pagina.test.mjs` | 57 verificações da página, com tema e sem tema, com 3 telemóveis simulados contra a base real |
+| `tests/pagina.test.mjs` | 58 verificações da página, com tema e sem tema, com 3 telemóveis simulados contra a base real |
 
 ```bash
 node tests/api.test.mjs https://tlqnhpvdzgyqwmextemq.supabase.co <chave_publicavel>
