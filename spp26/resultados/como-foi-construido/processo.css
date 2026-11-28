@@ -1,0 +1,18 @@
+/* Página «Como foi construído» */
+.intro-proc{display:grid;gap:16px;max-width:78ch}
+.intro-proc p{margin:0;font-size:17.5px}
+.pipe{list-style:none;margin:0;padding:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));counter-reset:p}
+.pipe>li{position:relative;padding-top:20px}
+.pipe>li h3::before{counter-increment:p;content:counter(p);display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-right:10px;
+  border-radius:50%;background:var(--signal);color:var(--surface);font-size:15px;vertical-align:2px}
+.pipe>li p{font-size:15.5px}
+.pipe details{margin-top:6px}
+blockquote{margin:0 0 8px;padding:10px 16px;border-left:4px solid var(--mag);background:var(--bg);border-radius:0 10px 10px 0;font-size:15.5px}
+.cartao-det{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2px 16px;margin-bottom:10px}
+.cartao-det:last-of-type{border-bottom:1px solid var(--line)}
+.verif td:nth-child(2){white-space:nowrap}
+.pront .barra .enche{background:var(--head)}
+.papel{border-top:5px solid var(--signal)}
+.papel.p1{border-top-color:#1878A8}.papel.p2{border-top-color:#A214C4}.papel.p3{border-top-color:var(--signal)}
+.papel ul{padding-left:18px;margin:0;font-size:15.5px}
+.papel li{margin-bottom:8px}

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Como o protótipo de monitorização DPOC foi construído com IA generativa a partir das ideias da sala: pesquisa, decisões, prompts, ferramentas, o que foi verificado e o que falta validar.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Como foi construído · protótipo DPOC da sessão SPP 2026">
+<meta property="og:description" content="Da resposta da sala ao protótipo: pesquisa no PubMed, decisões, prompts, ferramentas, verificação, riscos e limitações.">
+<meta property="og:image" content="https://hasp7.github.io/votar/spp26/resultados/og.png">
+<meta property="og:url" content="https://hasp7.github.io/votar/spp26/resultados/como-foi-construido/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#006E61">
+<title>Como foi construído · SPP 2026</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../comum/spp.css">
+<link rel="stylesheet" href="../resultados.css">
+<link rel="stylesheet" href="processo.css">
+<script src="../comum/comum.js" defer></script>
+</head>
+<body>
+<a class="salto" href="#conteudo">Saltar para o conteúdo</a>
+<div class="pagina">
+  <header class="cab">
+    <div class="cab-txt">
+      <p class="trilho"><a href="../">← Resultados da sessão</a> · <a href="../dpoc/">O protótipo</a></p>
+      <p class="evento">Protótipo Wild card · 42.º Congresso de Pneumologia · Núcleo de Enfermeiros</p>
+      <h1>Como foi construído</h1>
+      <p class="sub">Da ideia da sala ao protótipo, com o que ficou verificado e o que falta</p>
+    </div>
+    <div class="cab-lado"><button type="button" class="tema-bt" data-tema>☾ Modo escuro</button></div>
+  </header>
+
+  <main id="conteudo">
+    <section class="intro-proc">
+      <p>O protótipo de monitorização DPOC foi construído a 28 de novembro de 2026, no próprio dia da sessão, numa conversa de trabalho com IA generativa. Esta página conta esse percurso pelos três papéis da intervenção. Como <b>utilizador</b>, verificar o que a IA devolve. Como <b>co-criador</b>, especificar o que se quer e decidir. Como <b>responsável</b>, dizer o que ainda não está validado.</p>
+      <div class="band"><p>Funciona. Ainda não é seguro: é uma demonstração com casos fictícios, não uma ferramenta clínica.</p></div>
+    </section>
+
+    <section id="pipeline" aria-labelledby="h-pipe">
+      <h2 id="h-pipe">O caminho, em seis passos</h2>
+      <p class="muted">O mesmo caminho serve para as outras ideias da sala.</p>
+      <ol class="pipe">
+        <li class="cartao"><h3>Recolher</h3>
+          <p>As respostas chegaram em CSV, tirado da votação anónima, já sem os emails da lista de espera. Esses nunca passaram por ferramentas de IA. Antes de abrir o ficheiro, a IA confirmou que não tinha endereços de email. Depois leu as 13 respostas à procura de nomes, pessoas identificáveis ou doentes, e não havia nenhum.</p></li>
+        <li class="cartao"><h3>Analisar e escolher</h3>
+          <p>As respostas foram agrupadas em cinco temas. O tema com mais respostas (escalas e monitorização na DPOC, 4 de 13) coincide com a ideia que o autor escolheu: <i>«Monitorização de doente DPOC, com escala CAT, mMRC, SGRQ e LCADL»</i>.</p></li>
+        <li class="cartao"><h3>Especificar</h3>
+          <p>Antes de escrever código, a IA fez cinco perguntas ao autor. As respostas fixaram a especificação: onde publicar, que texto das escalas pode entrar, como identificar o utente, o que quer dizer «pipeline» e o que a página mostra.</p>
+          <details><summary>As cinco decisões</summary><div><ol>
+            <li><b>Publicação:</b> GitHub Pages, no repositório da votação, em <code>/votar/spp26/resultados/</code>.</li>
+            <li><b>Texto das escalas, conforme os direitos:</b> o mMRC entra com o texto completo, porque é de uso livre. O CAT e a LCADL entram com rótulos curtos, a aplicar com o instrumento oficial. O SGRQ entra só com as pontuações da calculadora oficial.</li>
+            <li><b>Identificação:</b> um código pseudónimo gerado no dispositivo. O histórico vai num ficheiro FHIR que o profissional guarda e volta a abrir, e nada fica no browser.</li>
+            <li><b>Pipeline:</b> um processo reutilizável, com este protótipo como primeiro caso.</li>
+            <li><b>Página:</b> já com os resultados reais da sala.</li>
+          </ol></div></details></li>
+        <li class="cartao"><h3>Pesquisar</h3>
+          <p>A pesquisa no PubMed procurou, para cada escala, o artigo original, a validação em português, a diferença mínima importante e o enquadramento do GOLD. Foram 14 artigos, cada um confirmado pelo PMID (e pelo DOI, quando existe), mais duas páginas oficiais. A pesquisa na web serviu para as licenças (GSK, SGUL) e o guia de bolso do GOLD em português.</p>
+          <details><summary>Pesquisas feitas</summary><div><ul>
+            <li>PubMed, por citação: Jones 2009 (CAT), Kon 2014, Bestall 1999, Jones 1992 (SGRQ), Jones 2005, Garrod 2000 (LCADL).</li>
+            <li>PubMed: «COPD Assessment Test Portuguese version validation» → Pimenta Valério 2022 (português europeu).</li>
+            <li>PubMed: «London Chest Activity of Daily Living Portuguese validation» → Pitta 2008, Carpes 2008, Oliveira 2025.</li>
+            <li>PubMed: «London Chest Activity of Daily Living minimal clinically important difference» → Gulart 2020. Por arrasto: Bisca 2014, Garrod 2002, Klijn 2015.</li>
+            <li>Web: termos de uso do CAT (catestonline.org), autorizações do SGRQ (sgul.ac.uk) e licença da LCADL, que não foi encontrada.</li>
+            <li>Terminologias: SNOMED CT no Ontoserver (CSIRO); LOINC na NLM e no tx.fhir.org.</li>
+          </ul></div></details></li>
+        <li class="cartao"><h3>Construir</h3>
+          <p>Páginas estáticas em HTML, CSS e JavaScript, sem bibliotecas nem serviços externos. Uma fonte única guarda as quatro escalas, com itens, cotação, limiares, descrição, modo de usar e bibliografia. A política de segurança de cada página bloqueia qualquer ligação à rede. A identidade é a da apresentação.</p></li>
+        <li class="cartao"><h3>Verificar</h3>
+          <p>Uma revisão de design pelas diretrizes de interface da Apple e pela WCAG levou a uma segunda versão: o utente sempre à vista, escalas que abrem só quando se aplicam, o que falta escrito junto ao item, «pior» e «melhor» em palavras e não só em cor, e nenhuma mensagem que desapareça sozinha. Testes automáticos num browser sem janela abrem as páginas em telemóvel (390 px) e em computador, em claro e escuro. Confirmam também as contas das escalas, o código pseudónimo e a ida e volta do ficheiro FHIR. A verificação clínica e de conteúdo é humana e ainda está por fazer: ver o quadro abaixo.</p></li>
+      </ol>
+    </section>
+
+    <section id="prompts" aria-labelledby="h-prompts">
+      <h2 id="h-prompts">Os prompts principais</h2>
+      <details class="cartao-det"><summary>O pedido do autor</summary><div>
+        <blockquote>Preciso de criar uma página que seja uma landing page para os resultados da apresentação da SPP. Gostava de começar por uma pipeline em que desse para executar este: «Monitorização de doente DPOC, com escala CAT, mMRC, SGRQ e LCADL». Sugeria pesquisa bibliográfica e suporte para o uso das escalas, com recurso ao PubMed; cada escala com a descrição, a bibliografia e o modo de usar (podendo esconder o detalhe); id do utente, seguindo guidelines e boas práticas de informática em saúde; publicação no GitHub Pages; identidade da apresentação. A landing page deve dar acesso aos diferentes elementos e a outros exemplos. Faz as 5 perguntas mais pertinentes para que consigas o melhor resultado.</blockquote>
+        <p class="pequeno muted">Ligeiramente editado para leitura.</p></div></details>
+      <details class="cartao-det"><summary>As regras que vinham do guião pós-sessão</summary><div><ul>
+        <li>Protótipo estático, sem dados reais nem recolha de dados, com a CSP fechada e nada em servidor.</li>
+        <li>Aviso bem visível: «Protótipo ilustrativo, gerado com IA generativa, não validado clinicamente». Só casos fictícios.</li>
+        <li>Separar factos de inferências, sem linguagem de marketing, e rever antes de publicar.</li>
+        <li>Antes de usar uma resposta da sala, verificar se tem dados identificativos e deixá-la de fora se tiver.</li>
+      </ul></div></details>
+    </section>
+
+    <section id="ferramentas" aria-labelledby="h-ferr">
+      <h2 id="h-ferr">Modelos e ferramentas</h2>
+      <div class="cartao rolar">
+        <table class="tabela">
+          <thead><tr><th scope="col">O quê</th><th scope="col">Para quê</th></tr></thead>
+          <tbody>
+            <tr><td>Claude Opus 5.5 (Anthropic), no Claude Code</td><td>Análise das respostas, perguntas de especificação, pesquisa, código e testes</td></tr>
+            <tr><td>Conector PubMed (NCBI)</td><td>Pesquisa e confirmação das referências (PMID, DOI, resumos)</td></tr>
+            <tr><td>Pesquisa web</td><td>Licenças dos instrumentos e guia de bolso GOLD</td></tr>
+            <tr><td>Servidores de terminologia FHIR (Ontoserver da CSIRO, tx.fhir.org da HL7) e NLM Clinical Tables</td><td>Confirmação dos códigos SNOMED CT e procura de códigos LOINC</td></tr>
+            <tr><td>Diretrizes de interface da Apple (HIG) e WCAG</td><td>Revisão da usabilidade, da acessibilidade e do contraste</td></tr>
+            <tr><td>Chromium sem janela</td><td>Testes automáticos e capturas de ecrã</td></tr>
+            <tr><td>GitHub Pages</td><td>Publicação estática, sem servidor de aplicação</td></tr>
+          </tbody>
+        </table>
+        <p class="nota-fonte">O protótipo não usa IA quando está a funcionar: as contas são regras fixas, escritas no código e iguais para todos. A IA entrou na construção, não na utilização.</p>
+      </div>
+    </section>
+
+    <section id="verificacao" aria-labelledby="h-ver">
+      <h2 id="h-ver">O que foi verificado, e por quem</h2>
+      <div class="cartao rolar">
+        <table class="tabela verif">
+          <thead><tr><th scope="col">Elemento</th><th scope="col">Estado</th><th scope="col">Como</th></tr></thead>
+          <tbody>
+            <tr><td>Artigos (14) e páginas oficiais (2)</td><td><span class="etiqueta">confirmado</span></td><td>PMID e DOI no PubMed, resumos lidos pela IA; as páginas da GSK e da SGUL, pela pesquisa web</td></tr>
+            <tr><td>Limiares e diferenças mínimas mostrados</td><td><span class="etiqueta">confirmado</span></td><td>Só de fontes lidas: GOLD (CAT 10, mMRC 2), Kon 2014, Jones 2005, Gulart 2020, Bisca 2014</td></tr>
+            <tr><td>Contas (totais, subtotais, %total da LCADL)</td><td><span class="etiqueta">confirmado</span></td><td>Testes automáticos com casos conhecidos</td></tr>
+            <tr><td>Regra do %total da LCADL</td><td><span class="etiqueta alarme">interpretação</span></td><td>Regra descrita (deixar de fora as atividades com 0), mas a fórmula exata não foi lida no artigo original</td></tr>
+            <tr><td>Texto do mMRC em português europeu</td><td><span class="etiqueta alarme">por verificar</span></td><td>Adaptado da tradução do guia GOLD 2025 (português do Brasil)</td></tr>
+            <tr><td>Nomes curtos das 15 atividades da LCADL</td><td><span class="etiqueta alarme">por verificar</span></td><td>A estrutura (4 + 6 + 2 + 3) está confirmada, os nomes não</td></tr>
+            <tr><td>Licença da LCADL</td><td><span class="etiqueta alarme">por confirmar</span></td><td>Sem termos publicados encontrados; perguntar aos autores</td></tr>
+            <tr><td>Códigos SNOMED CT no FHIR</td><td><span class="etiqueta">confirmado</span></td><td>Consulta ao servidor de terminologia Ontoserver (CSIRO): CAT 446660005 e SGRQ 450747009 (observable entity), graus do mMRC 1386307008 a 1386311002 (finding), todos da edição internacional. A LCADL não tem conceito e fica com código local</td></tr>
+            <tr><td>Códigos LOINC</td><td><span class="etiqueta alarme">não usados</span></td><td>Na NLM e no tx.fhir.org só aparece a escala MRC antiga (98070-6), não o mMRC, o CAT, o SGRQ nem a LCADL</td></tr>
+            <tr><td>Revisão de design e acessibilidade</td><td><span class="etiqueta">feita</span></td><td>Diretrizes de interface da Apple (HIG) e contraste WCAG calculado a partir das cores; bordas dos controlos acima de 3:1 e texto acima de 4,5:1, nos dois modos</td></tr>
+            <tr><td>Agrupamento das respostas da sala</td><td><span class="etiqueta alarme">leitura</span></td><td>Feito pela IA; outro critério daria outros temas</td></tr>
+            <tr><td>Conteúdo clínico (descrições, modo de usar)</td><td><span class="etiqueta alarme">por rever</span></td><td>Revisão por enfermeiros e médicos da área, ainda não feita</td></tr>
+            <tr><td>Usabilidade com profissionais</td><td><span class="etiqueta alarme">por fazer</span></td><td>Nenhum teste com utilizadores reais</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="prontidao" aria-labelledby="h-pront">
+      <h2 id="h-pront">Prontidão do protótipo</h2>
+      <p class="muted">As mesmas dimensões do diapositivo «Responsável». A barra mostra até onde o protótipo chegou em cada uma, numa leitura qualitativa e não numa medição.</p>
+      <div class="cartao">
+        <ul class="barras pront">
+          <li class="barra"><div class="rot"><span>Funcionalidade</span><b>protótipo funcional</b></div><div class="trilha"><div class="enche" data-pct="70"></div></div></li>
+          <li class="barra"><div class="rot"><span>Validação clínica</span><b>nenhuma</b></div><div class="trilha"><div class="enche" data-pct="5"></div></div></li>
+          <li class="barra"><div class="rot"><span>Privacidade</span><b>sem dados, por conceção</b></div><div class="trilha"><div class="enche" data-pct="60"></div></div></li>
+          <li class="barra"><div class="rot"><span>Fiabilidade</span><b>contas testadas, sem uso real</b></div><div class="trilha"><div class="enche" data-pct="35"></div></div></li>
+          <li class="barra"><div class="rot"><span>Governação</span><b>sem responsável clínico</b></div><div class="trilha"><div class="enche" data-pct="10"></div></div></li>
+          <li class="barra"><div class="rot"><span>Sustentabilidade</span><b>sem manutenção prevista</b></div><div class="trilha"><div class="enche" data-pct="10"></div></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="riscos" aria-labelledby="h-riscos">
+      <h2 id="h-riscos">Riscos e limitações</h2>
+      <div class="grelha">
+        <article class="cartao papel p1"><h3>Como utilizador</h3><ul>
+          <li>A IA escreveu texto e código com fluência, e isso não garante que esteja certo. Duas afirmações escritas de memória (coautores de um artigo e uma frase atribuída ao GOLD) foram apanhadas na revisão e retiradas.</li>
+          <li>As traduções das escalas são de trabalho. Em prática, usam-se sempre as versões portuguesas validadas e oficiais.</li>
+        </ul></article>
+        <article class="cartao papel p2"><h3>Como co-criador</h3><ul>
+          <li>O ponto de partida foi uma frase. Ninguém falou ainda com quem a escreveu, e o protótipo pode não resolver o problema real do serviço.</li>
+          <li>Ficou de fora o que pede outra conversa: exacerbações, espirometria, a classificação ABE do GOLD e a ligação ao processo clínico.</li>
+        </ul></article>
+        <article class="cartao papel p3"><h3>Como responsável</h3><ul>
+          <li><b>Dispositivo médico.</b> Um software que calcula pontuações para monitorizar doentes pode ser dispositivo médico se a finalidade for apoiar decisões clínicas (Regulamento (UE) 2017/745). A finalidade aqui é demonstrar, e por isso o protótipo não dá recomendações.</li>
+          <li><b>Dados pessoais.</b> Em uso real, mesmo pseudonimizados, os dados continuam a ser pessoais e de saúde: é preciso base legal, avaliação de impacto, ferramentas aprovadas e um sítio aprovado para guardar o ficheiro.</li>
+          <li><b>Direitos de autor.</b> O CAT, o SGRQ e a LCADL têm donos. Usá-los em produção pede as versões oficiais e as autorizações.</li>
+          <li><b>AI Act.</b> O protótipo não tem IA em funcionamento, por isso não deve cair na definição de sistema de IA. É uma leitura, não um parecer jurídico.</li>
+        </ul></article>
+      </div>
+    </section>
+  </main>
+</div>
+<footer class="rodape">
+  <span><b>Hélder Palheira</b> · helder.palheira@nex7.dev · helder.palheira@hc-healthcare.com</span>
+  <span>Como foi construído · versão de 28/11/2026</span>
+</footer>
+</body>
+</html>

@@ -1,0 +1,151 @@
+/* Identidade SPP × 42.º Congresso de Pneumologia — a mesma do deck v14.spp-id e do tema temas/spp26.
+   Fontes (SIL OFL 1.1) e velas vêm de temas/spp26/, para não haver duas cópias.
+   Claro e escuro: prefers-color-scheme, com o interruptor a fixar data-theme no <html>. */
+@font-face{font-family:"SPP Jost";font-weight:500;font-display:swap;src:url(../../../temas/spp26/jost-medium.woff2) format("woff2")}
+@font-face{font-family:"SPP Jost";font-weight:600;font-display:swap;src:url(../../../temas/spp26/jost-semibold.woff2) format("woff2")}
+@font-face{font-family:"SPP Jost";font-weight:700;font-display:swap;src:url(../../../temas/spp26/jost-bold.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:400;font-display:swap;src:url(../../../temas/spp26/ibmplexsans-400.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-weight:600 700;font-display:swap;src:url(../../../temas/spp26/ibmplexsans-600.woff2) format("woff2")}
+
+:root{
+  --bg:#EEF6F4; --bg2:#DFEEEA; --surface:#FFFFFF; --ink:#0E2B30; --muted:#486267; --line:#C2D9D4;
+  --signal:#006E61; --signal-soft:rgba(0,180,153,.13); --head:#0F4F6B; --mag:#A214C4; --mag-soft:rgba(204,24,240,.09);
+  --band:#0F4F6B; --alarm:#9A4F00; --alarm-soft:rgba(178,92,0,.10);
+  --ctl:#6B8885; --pior:#9A4F00; --pior-soft:rgba(178,92,0,.10); --melhor:#006E61;
+  --brand-grad:linear-gradient(90deg,#13BA9F 0%,#189CC0 45%,#1878A8 65%,#CC18F0 100%);
+  --wash1:rgba(204,24,240,.12); --wash2:rgba(24,156,192,.14);
+  --sombra:0 1px 2px rgba(14,43,48,.06),0 6px 20px -12px rgba(14,43,48,.25);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A2229; --bg2:#0E2C34; --surface:#12373F; --ink:#E8F5F2; --muted:#9DBCB9; --line:#285159;
+  --signal:#4FD8BC; --signal-soft:rgba(79,216,188,.14); --head:#E8F5F2; --mag:#E37BF7; --mag-soft:rgba(227,123,247,.12);
+  --band:#0E5470; --alarm:#F5A524; --alarm-soft:rgba(245,165,36,.12);
+  --ctl:#6A9894; --pior:#F5A524; --pior-soft:rgba(245,165,36,.12); --melhor:#4FD8BC;
+  --wash1:rgba(227,123,247,.13); --wash2:rgba(91,192,232,.13); --sombra:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0A2229; --bg2:#0E2C34; --surface:#12373F; --ink:#E8F5F2; --muted:#9DBCB9; --line:#285159;
+  --signal:#4FD8BC; --signal-soft:rgba(79,216,188,.14); --head:#E8F5F2; --mag:#E37BF7; --mag-soft:rgba(227,123,247,.12);
+  --band:#0E5470; --alarm:#F5A524; --alarm-soft:rgba(245,165,36,.12);
+  --ctl:#6A9894; --pior:#F5A524; --pior-soft:rgba(245,165,36,.12); --melhor:#4FD8BC;
+  --wash1:rgba(227,123,247,.13); --wash2:rgba(91,192,232,.13); --sombra:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+/* Aumentar contraste (definição do sistema): linhas e bordas mais fortes */
+@media (prefers-contrast:more){:root{--line:var(--ctl);--muted:var(--ink)}}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0}
+body{font:17px/1.55 "IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);
+  background:radial-gradient(760px 560px at 100% 0%,var(--wash1),transparent 66%),
+             radial-gradient(760px 560px at 0% 100%,var(--wash2),transparent 64%),var(--bg);
+  background-attachment:fixed;min-height:100vh}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:6px;background:var(--brand-grad);z-index:5}
+body::after{content:"";position:fixed;right:14px;bottom:14px;width:190px;height:220px;
+  background:url(../../../temas/spp26/velas.png) no-repeat right bottom/contain;opacity:.08;pointer-events:none;z-index:0}
+.pagina{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:28px 16px 40px}
+a{color:var(--signal);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--mag);outline-offset:2px;border-radius:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.salto{position:absolute;left:12px;top:-60px;background:var(--surface);padding:8px 12px;border-radius:8px;z-index:9}
+.salto:focus{top:12px}
+
+h1,h2,h3,.jost{font-family:"SPP Jost","IBM Plex Sans",sans-serif;color:var(--head);letter-spacing:-.01em;line-height:1.2}
+h1{font-size:clamp(26px,5vw,38px);font-weight:700;margin:0}
+h2{font-size:clamp(21px,3.4vw,27px);font-weight:600;margin:0 0 12px}
+h3{font-size:19px;font-weight:600;margin:0 0 6px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.mag{color:var(--mag)}
+small,.pequeno{font-size:14px}
+
+/* cabeçalho */
+.cab{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:18px;padding:6px 0 22px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.cab-txt{flex:1 1 420px;min-width:0}
+.cab .evento{font-size:14px;color:var(--muted);margin:0 0 10px;letter-spacing:.02em}
+.cab .sub{color:var(--mag);font-size:clamp(16px,2.4vw,19px);margin:8px 0 0;font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:500}
+.cab-lado{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.logo{width:150px;height:auto;display:block}
+.trilho{font-size:14px;margin:0 0 6px}
+.trilho a{text-decoration:none}
+.tema-bt{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--ctl);border-radius:999px;padding:6px 14px;min-height:44px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.tema-bt:hover{border-color:var(--signal)}
+
+/* blocos */
+section{margin:0 0 34px}
+.cartao{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--sombra)}
+.grelha{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.band{background:var(--band);color:#fff;border-left:6px solid #CC18F0;border-radius:12px;padding:16px 20px;font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:500;font-size:clamp(17px,2.4vw,20px);line-height:1.4}
+.band p{margin:0}
+.aviso{border:2px solid var(--alarm);background:var(--alarm-soft);border-radius:12px;padding:12px 16px;font-size:15.5px}
+.aviso b{color:var(--alarm)}
+.etiqueta{display:inline-block;font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:999px;background:var(--signal-soft);color:var(--signal)}
+.etiqueta.mag{background:var(--mag-soft);color:var(--mag)}
+.etiqueta.alarme{background:var(--alarm-soft);color:var(--alarm)}
+.etiqueta.ficticio{background:transparent;color:var(--head);border:1.5px dashed var(--head)}
+
+/* botões */
+.bt{font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;
+  border:2px solid var(--signal);background:var(--signal);color:#fff;text-decoration:none;cursor:pointer}
+:root[data-theme="dark"] .bt:not(.sec):not(.destrutivo){color:#062026}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bt:not(.sec):not(.destrutivo){color:#062026}}
+.bt.sec{background:transparent;color:var(--signal)}
+.bt:hover{filter:brightness(1.07)}
+.bt[disabled]{opacity:.5;cursor:not-allowed}
+.bts{display:flex;flex-wrap:wrap;gap:10px}
+
+/* barras (resultados) */
+.barras{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.barra .rot{display:flex;justify-content:space-between;gap:12px;font-size:15.5px;margin-bottom:4px}
+.barra .rot b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.barra .trilha{height:14px;border-radius:999px;background:var(--bg2);overflow:hidden}
+.barra .enche{height:100%;width:var(--pct,0%);border-radius:999px;background:var(--signal);transition:width .6s ease}
+.barra.topo .enche{background:var(--mag)}
+.nota-fonte{font-size:13.5px;color:var(--muted);margin-top:10px}
+
+/* detalhes */
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;padding:10px 2px;font-weight:600;color:var(--head);list-style:none;display:flex;align-items:center;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex:none;margin:0 4px}
+details[open]>summary::before{transform:rotate(45deg)}
+details>div{padding:2px 2px 14px;font-size:15.5px}
+details ul,details ol{padding-left:20px;margin:0 0 10px}
+details li{margin-bottom:6px}
+
+/* carimbo Wild card — o mesmo SVG do votar (app.js: selo e CARTA) */
+.selo{display:block;width:170px;color:var(--mag);margin:0 0 10px -4px}
+.selo svg{display:block;width:100%;height:auto}
+.selo text{font-family:"SPP Jost","IBM Plex Sans",sans-serif}
+
+/* tabelas */
+.tabela{width:100%;border-collapse:collapse;font-size:15px}
+.tabela th,.tabela td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tabela th{font-weight:600;color:var(--muted);font-size:13.5px;letter-spacing:.02em}
+.tabela td.num,.tabela th.num{text-align:right;font-variant-numeric:tabular-nums}
+.rolar{overflow-x:auto;position:relative}
+
+/* rodapé */
+.rodape{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:18px 16px 36px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+.rodape b{color:var(--ink);font-weight:600}
+.rodape a{color:var(--muted)}
+
+@media (max-width:600px){
+  body{font-size:16.5px}
+  .cab-lado{flex-direction:row;align-items:center;width:100%;justify-content:space-between}
+  .logo{width:110px}
+  .cartao{padding:16px}
+  body::after{width:120px;height:140px;opacity:.06}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  body{background:#fff;color:#000}
+  body::before,body::after,.tema-bt,.nao-imprimir{display:none!important}
+  .cartao{box-shadow:none;border-color:#999;break-inside:avoid}
+  a{color:#000}
+}

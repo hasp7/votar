@@ -1,0 +1,40 @@
+/* Página da sessão (landing): componentes próprios por cima de comum/spp.css */
+.cta{margin:20px 0 0}
+.atalhos{display:flex;flex-wrap:wrap;gap:8px;margin:-8px 0 30px}
+.atalhos a{font-size:14.5px;text-decoration:none;padding:10px 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.atalhos a:hover{border-color:var(--signal);color:var(--signal)}
+
+.sessao{display:grid;gap:16px;max-width:76ch}
+.sessao>p{margin:0;font-size:18px}
+.papeis{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.papeis b{font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:600}
+.papeis .d1{color:#1878A8}.papeis .d2{color:#8A2BB0}.papeis .d3{color:var(--signal)}
+:root[data-theme="dark"] .papeis .d1{color:#6CC4E8}:root[data-theme="dark"] .papeis .d2{color:#E37BF7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .papeis .d1{color:#6CC4E8}:root:not([data-theme="light"]) .papeis .d2{color:#E37BF7}}
+
+.votos h3{font-size:18px;margin-bottom:14px}
+.q{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;font-weight:600}
+.primeiros{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+.barra.topo .primeiros{color:var(--mag);font-weight:600}
+.leitura{margin-top:16px;max-width:80ch}
+.leitura h3{display:flex;gap:10px;align-items:center}
+
+.wild{border:2px dashed var(--mag);background:linear-gradient(180deg,var(--mag-soft),transparent 40%),var(--surface)}
+.wild h2{font-size:clamp(19px,3vw,24px);max-width:60ch}
+.temas{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.tema{padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.tema.destaque{border:2px solid var(--mag);grid-column:1/-1}
+.tema-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.tema-cab h3{font-size:17px;margin:0}
+.contagem{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:50%;background:var(--signal);color:var(--surface);
+  font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:700;font-size:17px}
+.tema.destaque .contagem{background:var(--mag)}
+.tema p{margin:8px 0 0;font-size:15px;color:var(--muted);font-style:italic}
+.tema .estado-tema{font-style:normal}
+
+.prot{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between;border-left:6px solid var(--mag)}
+.prot-txt{flex:1 1 440px}
+.prot h3{font-size:22px;margin:8px 0}
+.proximos{margin-top:22px}
+.cand{padding-left:20px;margin:0}
+.cand li{margin-bottom:6px}
