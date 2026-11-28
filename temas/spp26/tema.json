@@ -4,5 +4,12 @@
   "autor": "Hélder Palheira",
   "contactos": ["helder.palheira@nex7.dev", "helder.palheira@hc-healthcare.com"],
   "agradecimento": "Obrigado por participar",
+  "lista": {
+    "selo": "Wild card",
+    "titulo": "Quer ver o que a sala vai construir?",
+    "texto": "Vamos construir com IA generativa um protótipo a partir das ideias da sala e enviar-lhe o link.",
+    "botao": "Entrar na lista de espera",
+    "consentimento": "Aceito que o meu email seja usado no âmbito deste exercício de IA generativa, só para receber o link do protótipo. As ideias da sala, anónimas, vão ser trabalhadas com ferramentas de IA; o email fica à parte, não é partilhado e é apagado depois do envio. Responsável: Hélder Palheira."
+  },
   "css": "tema.css"
 }

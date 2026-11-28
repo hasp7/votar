@@ -151,6 +151,22 @@ t(conf.st === 'italic' && conf.fs < conf.fb && conf.linha, '«Pode mudar…» na
 await rpc('votar_fechar', {p_sala: SALA_T, p_chave: CHAVE}); await sleep(4500);
 t((await G.ev(`document.getElementById('posicao').textContent`)) === '', 'tema: sem pergunta aberta, a posição desaparece');
 t(await G.ev(`getComputedStyle(document.getElementById('titulo')).display!=='none'`), 'tema: sem pergunta, o título volta ao cabeçalho');
+await sleep(1500);
+t(await G.ev(`!!document.querySelector('.lista .selo svg') && document.querySelector('.lista .lista-bt').textContent.includes('lista de espera')`), 'lista: depois do fecho aparece o cartão com o carimbo e o botão');
+await G.ev(`document.querySelector('.lista .lista-bt').click()`); await sleep(300);
+t(await G.ev(`document.querySelector('.lista .enviar').disabled`), 'lista: «Inscrever» bloqueado sem email e sem consentimento');
+await G.ev(`(()=>{const i=document.querySelector('.lista input[type=email]');i.value='nao-e-email';i.dispatchEvent(new Event('input'));const c=document.querySelector('.lista input[type=checkbox]');c.checked=true;c.dispatchEvent(new Event('change'));document.querySelector('.lista .enviar').click();})()`);
+await sleep(1500);
+t((await G.ev(`document.querySelector('.lista-msg').textContent`)) === 'Confirme o email.', 'lista: email inválido recusado');
+await G.ev(`(()=>{const i=document.querySelector('.lista input[type=email]');i.value='Teste.Lista@Example.org';i.dispatchEvent(new Event('input'));document.querySelector('.lista .enviar').click();})()`);
+await sleep(1800);
+t((await G.ev(`document.querySelector('.lista .lista-tit').textContent`)) === 'Está na lista de espera.', 'lista: inscrição confirmada');
+const lx = await rpc('votar_lista_exportar', {p_sala: SALA_T, p_chave: CHAVE});
+t(lx.ok && JSON.stringify(lx.emails) === '["teste.lista@example.org"]', 'lista: o orador exporta o email (normalizado) com a chave');
+await G.send('Page.reload'); await sleep(3500);
+t((await G.ev(`document.querySelector('.lista .lista-tit')?.textContent||''`)) === 'Está na lista de espera.', 'lista: ao recarregar, lembra que já se inscreveu');
+const la = await rpc('votar_lista_apagar', {p_sala: SALA_T, p_chave: CHAVE});
+t(la.ok && la.apagados === 1, 'lista: o orador apaga a lista com a chave');
 
 const E = await telemovel(`http://127.0.0.1:${PORT}/votar/`); await sleep(1500);
 t(await E.ev(`!!document.querySelector('form.entrar input')`), 'sem sala no endereço: pede o código');

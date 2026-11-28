@@ -108,6 +108,23 @@ for (const [path, hdr, m] of [['/rest/v1/votos', {}, 'tabela votos pelo esquema 
   const x = await fetch(URL + path, {headers: {...H, ...hdr}});
   t(x.status >= 400, `${m} inacessível (HTTP ${x.status})`);
 }
+r = await rpc('votar_lista_inscrever', {p_sala: SALA, p_email: 'a@example.org', p_aceito: false});
+t(r.j?.ok === false && r.j.erro === 'consentimento em falta', 'lista: sem consentimento não entra');
+r = await rpc('votar_lista_inscrever', {p_sala: SALA, p_email: 'sem-arroba', p_aceito: true});
+t(r.j?.ok === false && r.j.erro === 'email inválido', 'lista: email inválido recusado');
+r = await rpc('votar_lista_inscrever', {p_sala: 'sala-que-nao-existe-' + Date.now().toString(36), p_email: 'a@example.org', p_aceito: true});
+t(r.j?.ok === false, 'lista: só em salas que existem');
+r = await rpc('votar_lista_inscrever', {p_sala: SALA, p_email: ' Alguem@Example.org ', p_aceito: true});
+const r2 = await rpc('votar_lista_inscrever', {p_sala: SALA, p_email: 'alguem@example.org', p_aceito: true});
+t(r.j?.ok && r2.j?.ok, 'lista: inscrição aceite (e repetida sem duplicar)');
+r = await rpc('votar_lista_exportar', {p_sala: SALA, p_chave: CHAVE + 'x'});
+t(r.j?.ok === false, 'lista: exportar sem a chave recusado');
+r = await rpc('votar_lista_exportar', {p_sala: SALA, p_chave: CHAVE});
+t(r.j?.ok && JSON.stringify(r.j.emails) === '["alguem@example.org"]', 'lista: exportar com a chave dá os emails, sem duplicados');
+r = await rpc('votar_estado', {p_sala: SALA}); const r3 = await rpc('votar_exportar', {p_sala: SALA, p_chave: CHAVE});
+t(!JSON.stringify(r.j).includes('@') && !JSON.stringify(r3.j).includes('alguem@'), 'lista: os emails não aparecem no estado nem na exportação dos votos');
+r = await rpc('votar_lista_apagar', {p_sala: SALA, p_chave: CHAVE});
+t(r.j?.ok && r.j.apagados === 1, 'lista: apagar com a chave');
 r = await rpc('votar_limpar', {p_sala: SALA, p_chave: CHAVE});
 t(r.j?.ok && r.j.apagados > 0, `limpar apaga os votos da sala (${r.j?.apagados})`);
 console.log(`\n${ok} OK, ${falhas} falhas · sala de teste: ${SALA}`);
