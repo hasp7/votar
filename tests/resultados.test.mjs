@@ -58,6 +58,14 @@ for (const [nome, url] of PAGINAS) for (const [w, h] of [[390, 844], [1280, 900]
   const bg = await ev("getComputedStyle(document.documentElement).getPropertyValue('--bg').trim().toUpperCase()");
   t(bg === (escuro ? '#0A2229' : '#EEF6F4'), `${rot}: tokens do tema ${escuro ? 'escuro' : 'claro'} (${bg})`);
   t(erros.length === 0, `${rot}: sem erros nem violações da CSP${erros.length ? ' → ' + erros.slice(0, 3).join(' | ') : ''}`);
+  if (w > 600) {
+    const cr = await ev(`(() => { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+      const L = h => { const c = [1,3,5].map(i => parseInt(h.slice(i, i+2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126*c[0] + .7152*c[1] + .0722*c[2]; };
+      const r = (a, b) => { const x = L(v(a)), y = L(v(b)); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+      return [r('--ctl', '--bg'), r('--ctl', '--surface'), r('--muted', '--bg'), r('--pior', '--surface'), r('--signal', '--surface')].map(x => Math.round(x * 100) / 100); })()`);
+    t(cr[0] >= 3 && cr[1] >= 3, `${rot}: bordas dos controlos ≥ 3:1 (${cr[0]}, ${cr[1]})`);
+    t(cr[2] >= 4.5 && cr[3] >= 4.5 && cr[4] >= 4.5, `${rot}: texto secundário, «pior» e ligações ≥ 4,5:1 (${cr.slice(2).join(', ')})`);
+  }
   await captura(`${nome}-${w}-${escuro ? 'escuro' : 'claro'}`);
 }
 
@@ -90,16 +98,33 @@ await ev("for (let i = 0; i < 8; i++) document.querySelector('#cat-' + i + '-3')
 t((await ev("document.querySelector('#res-cat').textContent")) === '24 de 40', 'formulário: CAT com 8 × 3 = 24 de 40');
 t(await ev("document.querySelector('#res-cat').classList.contains('acima')"), 'formulário: CAT ≥ 10 assinalado');
 await ev("document.querySelector('#cat-7-3').checked = false; document.querySelector('#avaliacao').dispatchEvent(new Event('change')); true");
-t((await ev("document.querySelector('#res-cat').textContent")) === 'Incompleto', 'formulário: CAT com item em falta fica incompleto');
+t((await ev("document.querySelector('#res-cat').textContent")) === '7 de 8 itens', 'formulário: CAT com item em falta mostra 7 de 8 itens');
+t((await ev("document.querySelector('#nav-cat').textContent")) === '7/8 itens', 'navegador: chip do CAT com 7/8 itens');
+await ev("document.querySelector('#guardar').click(); true"); await sleep(250);
+t(/falta o item 8/.test(await ev("document.querySelector('#form-msg').textContent")), 'validação: diz que falta o item 8 (Energia)');
+t(await ev("document.querySelectorAll('#escala-cat .item.falta').length") === 1 && await ev("document.activeElement.name") === 'cat-7', 'validação: item em falta assinalado e com o foco');
 await ev("const lc=[1,2,1,0,0,0,0,2,1,3,4,3,1,2,1]; lc.forEach((v,i)=>document.querySelector('#lcadl-'+i+'-'+v).click()); true");
 t((await ev("document.querySelector('#res-lcadl').textContent")) === '21 de 75 · 38,2\u00A0% do total', 'formulário: LCADL 21 e %total 38,2 (21 ÷ 55)');
 t((await ev("document.querySelector('#lcadl-dom-fisico').textContent")) === '7 / 10', 'formulário: subtotal físico 7 / 10');
 await ev("document.querySelector('#sgrq-total').value = '120'; document.querySelector('#avaliacao').dispatchEvent(new Event('input')); true");
-t((await ev("document.querySelector('#res-sgrq').textContent")) === 'Incompleto', 'formulário: SGRQ fora de 0–100 recusado');
+t((await ev("document.querySelector('#res-sgrq').textContent")) === 'Valor fora de 0–100', 'formulário: SGRQ fora de 0–100 recusado');
 await ev("document.querySelector('#sgrq-total').value = ''; document.querySelector('#cat-7-3').click(); document.querySelector('#data').value = '2026-11-27'; document.querySelector('#guardar').click(); true");
 await sleep(200);
 t(await ev("document.querySelectorAll('#tabela-evolucao tbody tr').length") === 5, 'formulário: avaliação nova junta à evolução');
 t(await ev("DPOC.estado.sujo") === true, 'formulário: há alterações por descarregar');
+t(/1 alteração por descarregar/.test(await ev("document.querySelector('#barra-estado').textContent")), 'barra: mostra 1 alteração por descarregar');
+t(!(await ev("document.querySelector('#barra').hidden")) && (await ev("document.querySelector('#barra-codigo').textContent")) === await ev("DPOC.estado.utente.codigo"), 'barra: código do utente sempre à vista');
+// remover e anular, sem alerta
+await ev("document.querySelector('#tabela-evolucao tbody tr:first-child .acoes .lig:last-child').click(); true"); await sleep(150);
+t(await ev("document.querySelectorAll('#tabela-evolucao tbody tr').length") === 4 && /removida/.test(await ev("document.querySelector('#estado-txt').textContent")), 'remover: sai da evolução e avisa');
+await ev("document.querySelector('#estado-acao').click(); true"); await sleep(150);
+t(await ev("document.querySelectorAll('#tabela-evolucao tbody tr').length") === 5, 'remover: «Anular» repõe a avaliação');
+// trocar de utente com alterações pendentes abre um diálogo com verbos explícitos
+await ev("document.querySelector('#gerar').click(); true"); await sleep(200);
+t(await ev("document.querySelector('#dialogo').open") === true && /Continuar sem guardar/.test(await ev("document.querySelector('#dlg-bts').textContent")), 'diálogo: avisa antes de perder alterações');
+const antes = await ev("DPOC.estado.utente.codigo");
+await ev("document.querySelector('#dlg-bts .bt.sec').click(); true"); await sleep(150);
+t(await ev("DPOC.estado.utente.codigo") === antes && !(await ev("document.querySelector('#dialogo').open")), 'diálogo: «Cancelar» mantém o utente');
 // FHIR ida e volta
 const ida = await ev("JSON.stringify(DPOC.paraFHIR())");
 const b = JSON.parse(ida);
@@ -109,6 +134,12 @@ t(tipos.filter(x => x === 'Patient').length === 1 && tipos.includes('Questionnai
 const pac = b.entry[0].resource;
 t(!pac.name && !pac.telecom && !pac.address && pac.identifier.length === 1, 'FHIR: Patient sem nome, contactos nem morada, só o pseudónimo');
 t(b.entry.every(e => /^[A-Za-z0-9\-.]{1,64}$/.test(e.resource.id)), 'FHIR: ids válidos');
+const obsCat = b.entry.map(e => e.resource).find(r => r.resourceType === 'Observation' && r.id.startsWith('obs-cat-'));
+t(obsCat.code.coding.some(c => c.system === 'http://snomed.info/sct' && c.code === '446660005'), 'FHIR: CAT com SNOMED CT 446660005');
+const obsM = b.entry.map(e => e.resource).find(r => r.resourceType === 'Observation' && r.id.startsWith('obs-mmrc-'));
+t(obsM.valueCodeableConcept.coding.some(c => c.system === 'http://snomed.info/sct' && ['1386307008', '1386308003', '1386309006', '1386310001', '1386311002'].includes(c.code)), 'FHIR: grau do mMRC como conceito SNOMED CT');
+const obsS = b.entry.map(e => e.resource).find(r => r.resourceType === 'Observation' && r.id.startsWith('obs-sgrq-'));
+t(obsS.code.coding.some(c => c.code === '450747009'), 'FHIR: SGRQ com SNOMED CT 450747009');
 const refs = new Set(b.entry.map(e => e.resource.resourceType + '/' + e.resource.id));
 t(b.entry.every(e => [e.resource.subject, ...(e.resource.derivedFrom || [])].filter(Boolean).every(r => refs.has(r.reference))), 'FHIR: todas as referências resolvem dentro do Bundle');
 const volta = await ev(`(() => { const r = DPOC.deFHIR(${ida}); return JSON.stringify(r.avaliacoes.sort((a,b)=>a.data.localeCompare(b.data)).map(a => [a.data, a.cat && a.cat.itens.join(''), a.lcadl && a.lcadl.itens.join('')])); })()`);

@@ -1,6 +1,7 @@
 /* Página da sessão (landing): componentes próprios por cima de comum/spp.css */
+.cta{margin:20px 0 0}
 .atalhos{display:flex;flex-wrap:wrap;gap:8px;margin:-8px 0 30px}
-.atalhos a{font-size:14.5px;text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.atalhos a{font-size:14.5px;text-decoration:none;padding:10px 14px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .atalhos a:hover{border-color:var(--signal);color:var(--signal)}
 
 .sessao{display:grid;gap:16px;max-width:76ch}

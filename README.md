@@ -95,7 +95,10 @@ Wild card e os protótipos construídos a partir delas. Não fala com o Supabase
 - `index.html`: landing (resultados q1–q3, temas da q4, protótipos). Dados copiados à mão do CSV agregado, sem emails.
 - `dpoc/`: protótipo de monitorização DPOC (CAT, mMRC, SGRQ, LCADL). `escalas.js` é a fonte única das escalas
   (cotação, limiares só de fontes verificadas, descrição, modo de usar, bibliografia com PMID/DOI); `dpoc.js` trata do
-  código pseudónimo, da evolução e do ficheiro FHIR R4 (etiqueta `HTEST`, recusa ficheiros sem ela). Nada é guardado.
+  código pseudónimo, da evolução e do ficheiro FHIR R4 (etiqueta `HTEST`, recusa ficheiros sem ela; SNOMED CT
+  internacional no CAT, SGRQ e graus do mMRC, confirmados no Ontoserver; LCADL só com código local). Nada é guardado.
+  Interface revista pelas HIG da Apple e WCAG: utente sempre à vista, escalas que abrem, erros junto ao item, «pior»/«melhor»
+  em palavras, sem mensagens com temporizador; bordas de controlo ≥ 3:1 e texto ≥ 4,5:1 (verificado no teste).
 - `como-foi-construido/`: processo, prompts, ferramentas, o que foi verificado e por quem, riscos.
 - `comum/`: identidade SPP (as fontes e as velas vêm de `temas/spp26/`).
 - Teste: `node tests/resultados.test.mjs [pasta-capturas] [--og]` (Chromium sem janela, sem rede; `--og` refaz `og.png`).

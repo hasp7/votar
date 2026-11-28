@@ -37,6 +37,8 @@ window.ESCALAS = (() => {
   const cat = {
     id: 'cat', sigla: 'CAT', nome: 'COPD Assessment Test', tipo: 'itens',
     mede: 'Impacto da DPOC no estado de saúde', max: 40, unidade: 'pontos', pior: 'mais alto',
+    // SNOMED CT, edição internacional (observable entity), confirmado no Ontoserver a 28/11/2026
+    snomed: {code: '446660005', display: 'COPD assessment test score'},
     respostas: [0, 1, 2, 3, 4, 5].map(v => ({v, txt: String(v)})),
     ancora: ['0 = melhor', '5 = pior'],
     // rótulos de domínio (não são o texto do questionário)
@@ -73,6 +75,8 @@ window.ESCALAS = (() => {
   const mmrc = {
     id: 'mmrc', sigla: 'mMRC', nome: 'Escala de dispneia do Medical Research Council modificada', tipo: 'unica',
     mede: 'Dispneia nas atividades do dia a dia', max: 4, unidade: 'grau', pior: 'mais alto',
+    // SNOMED CT: não há «pontuação mMRC» (o 450755002 é a MRC antiga, 1–5); os graus 0–4 existem como findings
+    snomedGraus: ['1386307008', '1386308003', '1386309006', '1386310001', '1386311002'],
     // adaptação de trabalho para português europeu, a partir da tradução do guia de bolso GOLD 2025 (português do Brasil)
     opcoes: [
       {v: 0, txt: 'Só fico com falta de ar com exercício intenso.'},
@@ -107,6 +111,7 @@ window.ESCALAS = (() => {
   const sgrq = {
     id: 'sgrq', sigla: 'SGRQ', nome: 'St George\'s Respiratory Questionnaire', tipo: 'componentes',
     mede: 'Qualidade de vida relacionada com a saúde respiratória', max: 100, unidade: 'pontos', pior: 'mais alto',
+    snomed: {code: '450747009', display: 'Saint George\'s respiratory questionnaire score'},
     versoes: [{v: 'SGRQ', txt: 'SGRQ (original)'}, {v: 'SGRQ-C', txt: 'SGRQ-C (para DPOC)'}],
     componentes: [{id: 'sintomas', txt: 'Sintomas'}, {id: 'atividade', txt: 'Atividade'}, {id: 'impacto', txt: 'Impacto'}, {id: 'total', txt: 'Total'}],
     verificado: true,

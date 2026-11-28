@@ -64,11 +64,12 @@
             <li>PubMed: «London Chest Activity of Daily Living Portuguese validation» → Pitta 2008, Carpes 2008, Oliveira 2025.</li>
             <li>PubMed: «London Chest Activity of Daily Living minimal clinically important difference» → Gulart 2020. Por arrasto: Bisca 2014, Garrod 2002, Klijn 2015.</li>
             <li>Web: termos de uso do CAT (catestonline.org), autorizações do SGRQ (sgul.ac.uk) e licença da LCADL, que não foi encontrada.</li>
+            <li>Terminologias: SNOMED CT no Ontoserver (CSIRO); LOINC na NLM e no tx.fhir.org.</li>
           </ul></div></details></li>
         <li class="cartao"><h3>Construir</h3>
           <p>Páginas estáticas em HTML, CSS e JavaScript, sem bibliotecas nem serviços externos. Uma fonte única guarda as quatro escalas, com itens, cotação, limiares, descrição, modo de usar e bibliografia. A política de segurança de cada página bloqueia qualquer ligação à rede. A identidade é a da apresentação.</p></li>
         <li class="cartao"><h3>Verificar</h3>
-          <p>Testes automáticos num browser sem janela abrem as páginas em telemóvel (390 px) e em computador, em claro e escuro. Confirmam também as contas das escalas, o código pseudónimo e a ida e volta do ficheiro FHIR. A verificação clínica e de conteúdo é humana e ainda está por fazer: ver o quadro abaixo.</p></li>
+          <p>Uma revisão de design pelas diretrizes de interface da Apple e pela WCAG levou a uma segunda versão: o utente sempre à vista, escalas que abrem só quando se aplicam, o que falta escrito junto ao item, «pior» e «melhor» em palavras e não só em cor, e nenhuma mensagem que desapareça sozinha. Testes automáticos num browser sem janela abrem as páginas em telemóvel (390 px) e em computador, em claro e escuro. Confirmam também as contas das escalas, o código pseudónimo e a ida e volta do ficheiro FHIR. A verificação clínica e de conteúdo é humana e ainda está por fazer: ver o quadro abaixo.</p></li>
       </ol>
     </section>
 
@@ -94,6 +95,8 @@
             <tr><td>Claude Opus 5.5 (Anthropic), no Claude Code</td><td>Análise das respostas, perguntas de especificação, pesquisa, código e testes</td></tr>
             <tr><td>Conector PubMed (NCBI)</td><td>Pesquisa e confirmação das referências (PMID, DOI, resumos)</td></tr>
             <tr><td>Pesquisa web</td><td>Licenças dos instrumentos e guia de bolso GOLD</td></tr>
+            <tr><td>Servidores de terminologia FHIR (Ontoserver da CSIRO, tx.fhir.org da HL7) e NLM Clinical Tables</td><td>Confirmação dos códigos SNOMED CT e procura de códigos LOINC</td></tr>
+            <tr><td>Diretrizes de interface da Apple (HIG) e WCAG</td><td>Revisão da usabilidade, da acessibilidade e do contraste</td></tr>
             <tr><td>Chromium sem janela</td><td>Testes automáticos e capturas de ecrã</td></tr>
             <tr><td>GitHub Pages</td><td>Publicação estática, sem servidor de aplicação</td></tr>
           </tbody>
@@ -115,7 +118,9 @@
             <tr><td>Texto do mMRC em português europeu</td><td><span class="etiqueta alarme">por verificar</span></td><td>Adaptado da tradução do guia GOLD 2025 (português do Brasil)</td></tr>
             <tr><td>Nomes curtos das 15 atividades da LCADL</td><td><span class="etiqueta alarme">por verificar</span></td><td>A estrutura (4 + 6 + 2 + 3) está confirmada, os nomes não</td></tr>
             <tr><td>Licença da LCADL</td><td><span class="etiqueta alarme">por confirmar</span></td><td>Sem termos publicados encontrados; perguntar aos autores</td></tr>
-            <tr><td>Códigos LOINC para o FHIR</td><td><span class="etiqueta alarme">por confirmar</span></td><td>O loinc.org não respondeu; para já, códigos locais</td></tr>
+            <tr><td>Códigos SNOMED CT no FHIR</td><td><span class="etiqueta">confirmado</span></td><td>Consulta ao servidor de terminologia Ontoserver (CSIRO): CAT 446660005 e SGRQ 450747009 (observable entity), graus do mMRC 1386307008 a 1386311002 (finding), todos da edição internacional. A LCADL não tem conceito e fica com código local</td></tr>
+            <tr><td>Códigos LOINC</td><td><span class="etiqueta alarme">não usados</span></td><td>Na NLM e no tx.fhir.org só aparece a escala MRC antiga (98070-6), não o mMRC, o CAT, o SGRQ nem a LCADL</td></tr>
+            <tr><td>Revisão de design e acessibilidade</td><td><span class="etiqueta">feita</span></td><td>Diretrizes de interface da Apple (HIG) e contraste WCAG calculado a partir das cores; bordas dos controlos acima de 3:1 e texto acima de 4,5:1, nos dois modos</td></tr>
             <tr><td>Agrupamento das respostas da sala</td><td><span class="etiqueta alarme">leitura</span></td><td>Feito pela IA; outro critério daria outros temas</td></tr>
             <tr><td>Conteúdo clínico (descrições, modo de usar)</td><td><span class="etiqueta alarme">por rever</span></td><td>Revisão por enfermeiros e médicos da área, ainda não feita</td></tr>
             <tr><td>Usabilidade com profissionais</td><td><span class="etiqueta alarme">por fazer</span></td><td>Nenhum teste com utilizadores reais</td></tr>
