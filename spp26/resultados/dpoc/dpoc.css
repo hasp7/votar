@@ -6,7 +6,7 @@
 .intro{max-width:72ch}
 
 /* barra de contexto: o utente ativo está sempre à vista */
-.barra{position:sticky;top:6px;z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 24px;padding:8px 10px 8px 16px;
+.barra{position:sticky;top:calc(var(--topo) + 4px);z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 24px;padding:8px 10px 8px 16px;
   border-radius:14px;background:var(--surface);border:1px solid var(--ctl);box-shadow:var(--sombra)}
 .barra-rot{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .barra-codigo{white-space:nowrap;font-family:"SPP Jost","IBM Plex Sans",sans-serif;font-weight:700;font-size:19px;letter-spacing:.05em;color:var(--head);font-variant-numeric:tabular-nums}
@@ -15,7 +15,7 @@
 .barra-estado.pendente::before{content:"● ";}
 
 .passo>h2,.aval-cab h2{display:flex;align-items:baseline;gap:10px}
-.passo,.escala,.item{scroll-margin-top:96px}
+.passo,.escala,.item{scroll-margin-top:calc(var(--topo) + 96px)}
 .intro p{font-size:16.5px}
 
 /* utente */
@@ -187,14 +187,16 @@ dialog .bts{justify-content:flex-end;margin-top:16px}
 .so-impressao{display:none}
 
 @media (max-width:600px){
-  .barra{top:4px;padding:6px 6px 6px 12px;flex-wrap:nowrap}
+  /* telemóvel: a barra do utente ocupa a largura toda, colada ao filete, sem fresta por onde se veja o conteúdo */
+  .barra{top:var(--topo);flex-wrap:nowrap;margin:0 -16px 20px;padding:10px 12px 10px 16px;border-radius:0 0 16px 16px;border-width:0 0 1px;
+    box-shadow:0 8px 18px -12px rgba(14,43,48,.45)}
   .barra-rot{display:none}
   .barra-codigo{font-size:16px;letter-spacing:.02em}
   .barra .etiqueta{font-size:11px;padding:1px 6px}
   .barra-estado{display:none}
   .barra-estado.pendente{display:block;position:absolute;left:12px;bottom:-22px;font-size:13px;background:var(--surface);padding:0 8px;border-radius:8px}
   .barra #barra-descarregar{margin-left:auto;padding:6px 12px}
-  .passo,.escala,.item{scroll-margin-top:80px}
+  .passo,.escala,.item{scroll-margin-top:calc(var(--topo) + 72px)}
   .escala-cab{flex-wrap:wrap;padding:4px 12px 10px 4px}
   .res-col{width:100%;align-items:stretch;padding-left:36px}
   .resultado{text-align:left}

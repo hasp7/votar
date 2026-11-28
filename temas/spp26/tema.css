@@ -27,7 +27,8 @@ body{font-family:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;
              radial-gradient(700px 520px at 0% 100%,var(--wash2),transparent 64%),var(--bg);
   background-attachment:fixed}
 /* filete da marca no topo, como nos diapositivos */
-body::before{content:"";position:fixed;left:0;right:0;top:0;height:6px;background:var(--brand-grad);z-index:3}
+/* o filete enche a zona segura do topo (iPhone: hora e bateria), para o conteúdo não passar por baixo dela no scroll */
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 8px);background:var(--brand-grad);z-index:3}
 /* velas do congresso como marca de água, por trás do conteúdo */
 body::after{content:"";position:fixed;right:10px;bottom:64px;width:170px;height:196px;
   background:url(velas.png) no-repeat right bottom/contain;opacity:.10;pointer-events:none;z-index:0}
