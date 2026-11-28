@@ -83,17 +83,28 @@ t(r.contagens[3] === 1 && Number(r.media) === 4, `escala enviada: ${JSON.stringi
 
 const P6 = {id: 'q6', tipo: 'ordenar', ordem: 3, total: 3, texto: 'Ordene por prioridade: o que lhe falta mais?', opcoes: ['Literacia em IA', 'Uso seguro e verificação', 'Co-criação de ferramentas', 'Avaliação e governação']};
 await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: P6}); await sleep(5000);
-await F[0].ev(`document.querySelectorAll('.op')[2].click()`); await F[0].ev(`document.querySelectorAll('.op')[0].click()`);
-const parcial = await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')+'|'+document.querySelector('.acoes .enviar').textContent+'|'+document.querySelector('.acoes .enviar').disabled`);
-t(parcial === '2.º,B,1.º,D|Faltam 2|true', `ordenar: os toques numeram por ordem (${parcial})`);
-await F[0].ev(`document.querySelectorAll('.op')[3].click()`);
-const completo = await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')+'|'+document.querySelector('.acoes .enviar').disabled`);
-t(completo === '2.º,4.º,1.º,3.º|false', `ordenar: com 3 escolhidas, a última fica sozinha em 4.º (${completo})`);
-await F[0].ev(`document.querySelector('.acoes .enviar').click()`); await sleep(1800);
+const ordemF0 = () => F[0].ev(`[...document.querySelectorAll('.ord')].map(x=>+x.dataset.v).join(',')`);
+t((await F[0].ev(`document.querySelector('.ajuda b')?.textContent||''`)) === 'Como ordenar', 'ordenar: abre com o pop-up de instruções');
+await F[0].ev(`document.querySelector('.ajuda .enviar').click()`); await sleep(300);
+t(await F[0].ev(`!document.querySelector('.ajuda')`), 'ordenar: «Percebi» fecha o pop-up');
+const ini = (await ordemF0()).split(',').map(Number);
+t([...ini].sort().join(',') === '0,1,2,3', `ordenar: ordem inicial baralhada no telemóvel (${ini.join(',')})`);
+await F[0].ev(`document.querySelectorAll('.ord')[2].querySelector('.seta').click()`); await sleep(200);
+const exp1 = [ini[0], ini[2], ini[1], ini[3]];
+t((await ordemF0()) === exp1.join(','), 'ordenar: a seta ▲ sobe a opção uma posição');
+const rc = JSON.parse(await F[0].ev(`JSON.stringify([...document.querySelectorAll('.ord')].map(o=>{const b=o.querySelector('.txt').getBoundingClientRect();return [b.left+20,b.top+b.height/2]}))`));
+await F[0].send('Input.dispatchMouseEvent', {type: 'mousePressed', x: rc[0][0], y: rc[0][1], button: 'left', buttons: 1, clickCount: 1});
+for (let k = 1; k <= 8; k++) { await F[0].send('Input.dispatchMouseEvent', {type: 'mouseMoved', x: rc[0][0], y: rc[0][1] + (rc[3][1] - rc[0][1]) * k / 8, button: 'left', buttons: 1}); await sleep(30); }
+await F[0].send('Input.dispatchMouseEvent', {type: 'mouseReleased', x: rc[0][0], y: rc[3][1], button: 'left', buttons: 0, clickCount: 1}); await sleep(300);
+const exp2 = [exp1[1], exp1[2], exp1[3], exp1[0]];
+t((await ordemF0()) === exp2.join(','), `ordenar: arrastar a 1.ª opção para o fim reordena a lista (${await ordemF0()})`);
+t((await F[0].ev(`[...document.querySelectorAll('.ord .pos')].map(x=>x.textContent).join(',')`)) === '1.º,2.º,3.º,4.º', 'ordenar: as posições renumeram-se');
+await F[0].ev(`document.querySelector('.ordenar+.enviar').click()`); await sleep(1800);
 r = await rpc('votar_resultados', {p_sala: SALA, p_pergunta: 'q6'});
-t(JSON.stringify(r.contagens) === '[2,0,3,1]', `ordenar: pontos registados ${JSON.stringify(r.contagens)}`);
-await F[0].ev(`document.querySelector('.limpar').click()`);
-t((await F[0].ev(`[...document.querySelectorAll('.op .letra')].map(x=>x.textContent).join(',')`)) === 'A,B,C,D', 'ordenar: «Recomeçar» limpa a ordem');
+const pts = [0, 0, 0, 0]; exp2.forEach((v, k) => { pts[v] = 3 - k; });
+t(JSON.stringify(r.contagens) === JSON.stringify(pts), `ordenar: os pontos seguem a ordem enviada ${JSON.stringify(r.contagens)}`);
+await F[0].send('Page.reload'); await sleep(3500);
+t(await F[0].ev(`!document.querySelector('.ajuda')`) && (await ordemF0()) === exp2.join(','), 'ordenar: ao recarregar, sem pop-up e com a ordem que enviou');
 const P8 = {id: 'q8', tipo: 'texto', texto: 'Se pudesse criar algo com IA para o seu serviço, o que seria?', opcoes: ['Objetivo principal', 'Impacto esperado']};
 await rpc('votar_abrir', {p_sala: SALA, p_chave: CHAVE, p_pergunta: P8}); await sleep(5000);
 t((await F[1].ev(`document.querySelectorAll('textarea').length+'|'+document.querySelector('.enviar').disabled+'|'+document.querySelector('.dica').textContent`)) === '2|true|Responda em poucas palavras. Não escreva nomes nem dados de doentes.', 'texto: dois campos, envio bloqueado até haver objetivo, aviso de dados');
