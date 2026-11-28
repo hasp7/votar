@@ -126,12 +126,12 @@
     const registado = () => { ok.replaceChildren(el('b', {text: q.tipo === 'texto' ? 'Resposta enviada.' : 'Voto registado.'}), el('span', {class: 'mudar', text: 'Pode mudar até a pergunta fechar.'})); ok.hidden = false;
       if (aEnviar) ok.scrollIntoView({block: 'center', behavior: 'smooth'}); };
 
-    async function enviar(vals) {
+    async function enviar(vals, aoGravar) {
       if (aEnviar) return;
       aEnviar = true; msg('');
       try {
         const r = await rpc('votar_votar', {p_sala: sala, p_pergunta: q.id, p_pid: PID, p_resposta: vals});
-        if (r && r.ok) { store.set(chaveVoto(q), JSON.stringify(vals)); registado(); }
+        if (r && r.ok) { store.set(chaveVoto(q), JSON.stringify(vals)); if (aoGravar) aoGravar(); else registado(); }
         else if (r && r.erro === 'pergunta fechada') { msg('Esta pergunta já fechou.'); ciclo(); }
         else msg('Não foi possível registar o voto. Tente outra vez.');
       } catch (e) {
@@ -142,27 +142,43 @@
     const kids = [el('h1', {text: q.texto})];
     let depois = null;
     if (q.tipo === 'texto') {
-      // resposta aberta: um campo por nome (q.opcoes), até 280 caracteres; o primeiro é obrigatório
-      kids.push(el('p', {class: 'dica', text: 'Responda em poucas palavras. Não escreva nomes nem dados de doentes.'}));
-      const btEnviar = el('button', {class: 'enviar', type: 'button', text: 'Enviar'});
-      const areas = [];
-      const atualizar = () => { btEnviar.disabled = !areas[0].value.trim(); areas.forEach(a => { a._conta.textContent = a.value.length + '/280'; }); };
-      q.opcoes.forEach((c, i) => {
-        const ta = el('textarea', {rows: '3', maxlength: '280', 'aria-label': c, oninput: () => { atualizar(); ok.hidden = true; }});
-        ta.value = (Array.isArray(guardado) && typeof guardado[i] === 'string') ? guardado[i] : '';
-        ta._conta = el('span', {class: 'conta'});
-        areas.push(ta);
-        kids.push(el('label', {class: 'campo'}, el('span', {class: 'campo-nome', text: c}), ta, ta._conta));
-      });
-      btEnviar.addEventListener('click', () => enviar(areas.map(a => a.value.trim())));
-      kids.push(btEnviar);
-      depois = atualizar;
+      // resposta aberta por partes: A. (campo 1) → Submeter A → B. (campo 2) → Submeter B; cada submissão grava logo
+      const campos = q.opcoes, n = campos.length, L = 'ABC';
+      let vals = campos.map((_, i) => (Array.isArray(guardado) && typeof guardado[i] === 'string') ? guardado[i] : '');
+      const proximo = de => { const i = vals.findIndex((v, j) => j >= de && !v.trim()); return i < 0 ? n : i; };
+      let k = proximo(0);
+      kids.push(el('p', {class: 'dica', text: 'Responda em poucas palavras, uma parte de cada vez.'}));
+      const cx = el('div', {class: 'partes'});
+      const feito = i => el('div', {class: 'feito'}, el('span', {class: 'letra', text: L[i]}),
+        el('div', {class: 'feito-txt'}, el('b', {text: campos[i]}), el('p', {text: vals[i]})),
+        el('button', {class: 'alterar', type: 'button', text: 'Alterar', onclick: () => { k = i; passo(); }}));
+      const passo = () => {
+        ok.hidden = true;
+        const antes = vals.map((v, i) => v.trim() && i !== k ? feito(i) : null).filter(Boolean);
+        if (k >= n) { cx.replaceChildren(...antes); registado(); return; }
+        const ta = el('textarea', {rows: '4', maxlength: '280', 'aria-label': L[k] + '. ' + campos[k]}); ta.value = vals[k];
+        const conta = el('span', {class: 'conta'});
+        const bt = el('button', {class: 'enviar', type: 'button', text: 'Submeter ' + L[k]});
+        const upd = () => { conta.textContent = ta.value.length + '/280'; bt.disabled = !ta.value.trim(); };
+        ta.addEventListener('input', upd); upd();
+        bt.addEventListener('click', () => {
+          const v = ta.value.trim(); if (!v) return;
+          const nv = vals.slice(); nv[k] = v;
+          if (!nv[0].trim()) return;
+          enviar(nv, () => { vals = nv; k = proximo(k + 1); if (k >= n) k = proximo(0); passo(); });
+        });
+        cx.replaceChildren(...antes, el('label', {class: 'campo'},
+          el('span', {class: 'campo-nome'}, el('span', {class: 'letra', text: L[k]}), ' ' + campos[k], n > 1 ? el('small', {text: ` · parte ${k + 1} de ${n}`}) : null),
+          ta, conta), bt);
+        if (antes.length) setTimeout(() => ta.focus(), 50);
+      };
+      kids.push(cx);
+      depois = passo;
     } else if (q.tipo === 'ordenar') {
       // ordenar a arrastar (rato ou dedo) ou com as setas; ordem inicial baralhada em cada telemóvel (evita o viés da ordem)
       const n = q.opcoes.length;
       const baralhar = a => { const r = new Uint32Array(a.length); crypto.getRandomValues(r); for (let i = a.length - 1; i > 0; i--) { const j = r[i] % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
       let ordem = Array.isArray(guardado) && guardado.length === n ? guardado.slice() : baralhar([...Array(n).keys()]);
-      kids.push(el('p', {class: 'dica', text: 'Arraste as opções: a mais importante fica em cima.'}));
       const lista = el('ol', {class: 'ordenar', 'aria-label': q.texto});
       const mover = (a, b) => { if (b < 0 || b >= n || a === b) return; const x = ordem.splice(a, 1)[0]; ordem.splice(b, 0, x); desenhar(); ok.hidden = true; };
       const item = (i, p) => {
@@ -244,7 +260,7 @@
     kids.push(ok);
     vista.replaceChildren(...kids);
     if (depois) depois(); else marcar(escolha);
-    if (guardado) registado();
+    if (guardado && q.tipo !== 'texto') registado();
   }
 
   async function ciclo() {
