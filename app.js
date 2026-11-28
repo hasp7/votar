@@ -107,6 +107,7 @@
 
   function mostrarEspera(fechada) {
     posicao(null);
+    document.querySelectorAll('.ajuda').forEach(x => x.remove());
     document.body.classList.remove('com-pergunta');
     vista.replaceChildren(el('p', {class: 'espera'},
       el('b', {text: fechada ? 'Votação fechada. Obrigado.' : 'Ainda não há pergunta aberta.'}),
@@ -115,6 +116,7 @@
 
   function mostrarPergunta(q) {
     posicao(q);
+    document.querySelectorAll('.ajuda').forEach(x => x.remove());
     document.body.classList.add('com-pergunta');
     const guardado = (() => { try { return JSON.parse(store.get(chaveVoto(q)) || 'null'); } catch (e) { return null; } })();
     const ok = el('p', {class: 'ok', hidden: ''});
@@ -156,30 +158,61 @@
       kids.push(btEnviar);
       depois = atualizar;
     } else if (q.tipo === 'ordenar') {
+      // ordenar a arrastar (rato ou dedo) ou com as setas; ordem inicial baralhada em cada telemóvel (evita o viés da ordem)
       const n = q.opcoes.length;
-      let ordem = Array.isArray(guardado) && guardado.length === n ? guardado.slice() : [];
-      kids.push(el('p', {class: 'dica', text: 'Toque pela ordem de prioridade: primeiro a mais importante.'}));
-      const lista = el('div', {class: 'opcoes', role: 'group', 'aria-label': q.texto});
-      const btEnviar = el('button', {class: 'enviar', type: 'button', text: 'Enviar', onclick: () => enviar(ordem.slice())});
-      const pintar = () => {
-        botoes.forEach(b => { const i = +b.dataset.v, p = ordem.indexOf(i);
-          b.setAttribute('aria-pressed', String(p >= 0)); b.querySelector('.letra').textContent = p >= 0 ? (p + 1) + '.º' : LETRAS[i]; });
-        const falta = n - ordem.length;
-        btEnviar.disabled = falta > 0; btEnviar.textContent = falta > 0 ? (falta === 1 ? 'Falta 1' : `Faltam ${falta}`) : 'Enviar';
+      const baralhar = a => { const r = new Uint32Array(a.length); crypto.getRandomValues(r); for (let i = a.length - 1; i > 0; i--) { const j = r[i] % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+      let ordem = Array.isArray(guardado) && guardado.length === n ? guardado.slice() : baralhar([...Array(n).keys()]);
+      kids.push(el('p', {class: 'dica', text: 'Arraste as opções: a mais importante fica em cima.'}));
+      const lista = el('ol', {class: 'ordenar', 'aria-label': q.texto});
+      const mover = (a, b) => { if (b < 0 || b >= n || a === b) return; const x = ordem.splice(a, 1)[0]; ordem.splice(b, 0, x); desenhar(); ok.hidden = true; };
+      const item = (i, p) => {
+        const up = el('button', {class: 'seta', type: 'button', 'aria-label': 'Subir: ' + q.opcoes[i], text: '▲', onclick: () => mover(p, p - 1)});
+        const dn = el('button', {class: 'seta', type: 'button', 'aria-label': 'Descer: ' + q.opcoes[i], text: '▼', onclick: () => mover(p, p + 1)});
+        up.disabled = p === 0; dn.disabled = p === n - 1;
+        const li = el('li', {class: 'ord', 'data-v': String(i)}, el('span', {class: 'pega', 'aria-hidden': 'true', text: '⋮⋮'}),
+          el('span', {class: 'pos', text: (p + 1) + '.º'}), el('span', {class: 'txt', text: q.opcoes[i]}), el('span', {class: 'setas'}, up, dn));
+        li.addEventListener('pointerdown', e => arrastar(e, li));
+        return li;
       };
-      const btLimpar = el('button', {class: 'limpar', type: 'button', text: 'Recomeçar', onclick: () => { ordem = []; pintar(); ok.hidden = true; }});
-      q.opcoes.forEach((t, i) => {
-        const b = el('button', {class: 'op', type: 'button', 'data-v': String(i), 'aria-pressed': 'false',
-          onclick: () => {
-            const p = ordem.indexOf(i);
-            if (p >= 0) ordem.splice(p, 1); else ordem.push(i);
-            if (ordem.length === n - 1) ordem.push([...Array(n).keys()].find(k => !ordem.includes(k))); // a última fica sozinha em último
-            pintar(); ok.hidden = true;
-          }}, el('span', {class: 'letra', text: LETRAS[i]}), el('span', {text: t}));
-        botoes.push(b); lista.append(b);
-      });
-      kids.push(lista, el('div', {class: 'acoes'}, btLimpar, btEnviar));
-      depois = pintar;
+      const desenhar = () => lista.replaceChildren(...ordem.map((i, p) => item(i, p)));
+      function arrastar(e, li) {
+        if (e.button > 0 || e.target.closest('button')) return;
+        e.preventDefault();
+        const itens = [...lista.children], de = itens.indexOf(li);
+        const caixas = itens.map(o => o.getBoundingClientRect()), centros = caixas.map(b => b.top + b.height / 2);
+        const passo = caixas[de].height + 10, y0 = e.clientY;
+        let para = de;
+        try { li.setPointerCapture(e.pointerId); } catch (_) {}
+        li.classList.add('a-arrastar');
+        const mexe = ev => {
+          const dy = ev.clientY - y0, c = centros[de] + dy;
+          li.style.transform = `translateY(${dy}px)`;
+          para = centros.reduce((m, x, k) => Math.abs(x - c) < Math.abs(centros[m] - c) ? k : m, 0);
+          itens.forEach((o, k) => { if (o === li) return; const s = de < para && k > de && k <= para ? -passo : de > para && k < de && k >= para ? passo : 0; o.style.transform = s ? `translateY(${s}px)` : ''; });
+        };
+        const larga = () => {
+          li.removeEventListener('pointermove', mexe); li.removeEventListener('pointerup', larga); li.removeEventListener('pointercancel', larga);
+          itens.forEach(o => { o.style.transform = ''; }); li.classList.remove('a-arrastar');
+          if (para !== de) mover(de, para);
+        };
+        li.addEventListener('pointermove', mexe); li.addEventListener('pointerup', larga); li.addEventListener('pointercancel', larga);
+      }
+      desenhar();
+      kids.push(lista, el('button', {class: 'enviar', type: 'button', text: 'Enviar esta ordem', onclick: () => enviar(ordem.slice())}));
+      // pop-up com as instruções, uma vez por pergunta
+      const kAj = 'votar-ajuda:' + sala + ':' + q.id;
+      if (!store.get(kAj)) {
+        const fechar = () => { aj.remove(); store.set(kAj, '1'); };
+        const demo = el('div', {class: 'demo', 'aria-hidden': 'true'}, el('i', {}), el('i', {class: 'sobe'}), el('i', {}));
+        const aj = el('div', {class: 'ajuda', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Como ordenar'},
+          el('div', {class: 'ajuda-caixa'}, el('b', {text: 'Como ordenar'}), demo,
+            el('ol', {}, el('li', {text: 'Toque numa opção, mantenha o dedo e arraste-a para cima ou para baixo.'}),
+              el('li', {text: 'Em cima fica a mais importante (1.º).'}),
+              el('li', {text: 'Se preferir, use as setas ▲ ▼ ao lado de cada opção.'}),
+              el('li', {text: 'No fim, toque em «Enviar esta ordem».'})),
+            el('button', {class: 'enviar', type: 'button', text: 'Percebi', onclick: fechar})));
+        document.body.append(aj);
+      }
     } else if (q.tipo === 'escala') {
       kids.push(el('p', {class: 'dica', text: `Toque num número de ${q.min} a ${q.max}.`}));
       const linha = el('div', {class: 'escala opcoes', role: 'group', 'aria-label': q.texto});
